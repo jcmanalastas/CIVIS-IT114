@@ -1,7 +1,7 @@
-# CIVIS – Community Infrastructure, Visibility, and Integrated Services
+# CIVIS - Community Infrastructure, Visibility, and Integrated Services
 
 CIVIS is an Android mobile application project developed for
-IT114 – Mobile Development Fundamentals.
+IT114 - Mobile Development Fundamentals.
 
 The application is designed to provide barangay residents with a
 centralized way to report and monitor non-emergency community and
