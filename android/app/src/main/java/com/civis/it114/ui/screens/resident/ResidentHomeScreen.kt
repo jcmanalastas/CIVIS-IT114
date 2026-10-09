@@ -1,7 +1,9 @@
 package com.civis.it114.ui.screens.resident
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,109 +12,109 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-private val CivisBlue = Color(0xFF1769C2)
-private val CivisGreen = Color(0xFF16A34A)
-private val CivisLightBlue = Color(0xFFE8F1FC)
 
 @Composable
 fun ResidentHomeScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FC))
-            .padding(horizontal = 10.dp, vertical = 16.dp)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        CivisLogo()
-
-        Spacer(modifier = Modifier.height(22.dp))
-
-        Text(
-            text = "Good day,",
-            fontSize = 12.sp
-        )
-
-        Text(
-            text = "Resident!",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = "How can we help your community?",
-            fontSize = 11.sp
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        Button(
-            onClick = {},
+        Column(
             modifier = Modifier
+                .weight(1f)
                 .fillMaxWidth()
-                .height(38.dp)
+                .padding(horizontal = 24.dp, vertical = 16.dp)
         ) {
+            CivisLogo()
+
+            Spacer(modifier = Modifier.height(48.dp))
+
             Text(
-                text = "＋   Report an Issue",
-                fontSize = 12.sp
+                text = "Good day,",
+                style = MaterialTheme.typography.titleSmall
             )
-        }
 
-        Spacer(modifier = Modifier.height(4.dp))
-
-        OutlinedButton(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(36.dp)
-                .background(CivisLightBlue)
-        ) {
             Text(
-                text = "Track My Reports",
-                fontSize = 12.sp,
-                color = CivisBlue
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Recent Report",
-                fontSize = 11.sp,
+                text = "Resident!",
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "View All",
-                fontSize = 10.sp,
-                color = CivisBlue
+                text = "How can we help your community?",
+                style = MaterialTheme.typography.bodyMedium
             )
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text(
+                    text = "+       Report an Issue",
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedButton(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text(
+                    text = "=       Track My Reports",
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Recent Report",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = "View All",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            EmptyReportsMessage()
+
+            Spacer(modifier = Modifier.weight(1f))
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        EmptyReportsMessage()
-
-        Spacer(modifier = Modifier.weight(1f))
 
         ResidentBottomBar()
     }
@@ -121,23 +123,26 @@ fun ResidentHomeScreen() {
 @Composable
 private fun CivisLogo() {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(
+        Box(
             modifier = Modifier
-                .size(11.dp)
-                .background(CivisGreen, CircleShape)
+                .size(28.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
+                )
         )
-
-        Spacer(modifier = Modifier.width(3.dp))
 
         Text(
             text = "CIVIS",
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF003078)
+            modifier = Modifier.padding(start = 6.dp),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -152,23 +157,26 @@ private fun EmptyReportsMessage() {
     ) {
         Text(
             text = "No Reports Yet",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Have an issue to report?\nSubmit your first report to help improve your community.",
-            fontSize = 10.sp,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
+            text = "Have an issue to report?\n" +
+                "Submit your first report to help improve your community.",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
             text = "Your reports will appear here once submitted.",
-            fontSize = 10.sp,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
     }
@@ -176,16 +184,38 @@ private fun EmptyReportsMessage() {
 
 @Composable
 private fun ResidentBottomBar() {
-    Row(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 12.dp, bottom = 2.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline
+            ),
+        tonalElevation = 2.dp
     ) {
-        BottomBarItem("⌂", "Home", selected = true)
-        BottomBarItem("▤", "Reports", selected = false)
-        BottomBarItem("◎", "Profile", selected = false)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BottomBarItem(
+                symbol = "⌂",
+                label = "Home",
+                selected = true
+            )
+
+            BottomBarItem(
+                symbol = "▤",
+                label = "Reports"
+            )
+
+            BottomBarItem(
+                symbol = "◎",
+                label = "Profile"
+            )
+        }
     }
 }
 
@@ -193,21 +223,26 @@ private fun ResidentBottomBar() {
 private fun BottomBarItem(
     symbol: String,
     label: String,
-    selected: Boolean
+    selected: Boolean = false
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
             text = symbol,
-            fontSize = 15.sp,
-            color = if (selected) CivisBlue else Color.DarkGray
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
         )
 
         Text(
             text = label,
-            fontSize = 9.sp,
-            color = if (selected) CivisBlue else Color.DarkGray
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = if (selected) {
+                FontWeight.Bold
+            } else {
+                FontWeight.Normal
+            }
         )
     }
 }
