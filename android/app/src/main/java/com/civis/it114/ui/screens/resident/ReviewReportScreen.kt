@@ -192,7 +192,7 @@ private fun ReviewReportPreview() {
         ReviewReportScreen(
             category = "Broken Streetlight",
             description = "Streetlight is not working at night.",
-            location = "Brgy. Mapag, Laguna",
+            location = "Brgy. Mapua, Laguna",
             photoAdded = true,
             submitted = false,
             onBack = {},

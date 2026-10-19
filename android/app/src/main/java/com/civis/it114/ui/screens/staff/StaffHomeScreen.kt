@@ -331,7 +331,7 @@ private fun StaffHomePendingPreview() {
             resolvedCount = 2,
             caseId = "CIV-0001",
             category = "Broken Streetlight",
-            location = "Brgy. Mapag, Laguna",
+            location = "Brgy. Mapua, Laguna",
             caseStatus = "Pending",
             onViewCase = {},
             onBack = {}
@@ -353,7 +353,7 @@ private fun StaffHomeAssignedPreview() {
             resolvedCount = 2,
             caseId = "CIV-0001",
             category = "Broken Streetlight",
-            location = "Brgy. Mapag, Laguna",
+            location = "Brgy. Mapua, Laguna",
             caseStatus = "Assigned",
             onViewCase = {},
             onBack = {}
@@ -375,7 +375,7 @@ private fun StaffHomeResolvedPreview() {
             resolvedCount = 2,
             caseId = "CIV-0001",
             category = "Broken Streetlight",
-            location = "Brgy. Mapag, Laguna",
+            location = "Brgy. Mapua, Laguna",
             caseStatus = "Resolved",
             onViewCase = {},
             onBack = {}

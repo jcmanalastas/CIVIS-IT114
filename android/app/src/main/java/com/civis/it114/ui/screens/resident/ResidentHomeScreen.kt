@@ -372,7 +372,7 @@ private fun ResidentHomeWithReportPreview() {
             hasReport = true,
             caseId = "CIV-0001",
             category = "Broken Streetlight",
-            location = "Brgy. Mapag, Laguna",
+            location = "Brgy. Mapua, Laguna",
             status = "Submitted",
             onReportIssue = {},
             onTrackReports = {},
