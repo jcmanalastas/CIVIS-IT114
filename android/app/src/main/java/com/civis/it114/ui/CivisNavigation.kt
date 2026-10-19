@@ -161,11 +161,14 @@ fun CivisNavigation(
                 onSubmit = {
                     appState.submitReport()
 
-                    navController.navigate(CivisRoutes.CaseStatus) {
-                        popUpTo(CivisRoutes.ReportIssue) {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStack(
+                        CivisRoutes.ResidentHome,
+                        false
+                    )
+
+                    navController.navigate(
+                        CivisRoutes.CaseStatus
+                    )
                 }
             )
         }
@@ -248,13 +251,14 @@ fun CivisNavigation(
                 onAssignCase = {
                     appState.assignCase()
 
+                    navController.popBackStack(
+                        CivisRoutes.StaffHome,
+                        false
+                    )
+
                     navController.navigate(
                         CivisRoutes.AssignmentConfirmation
-                    ) {
-                        popUpTo(CivisRoutes.CaseDetails) {
-                            inclusive = true
-                        }
-                    }
+                    )
                 },
                 onRecordInspection = {
                     navController.navigate(
@@ -319,13 +323,14 @@ fun CivisNavigation(
                 onSaveInspection = {
                     appState.saveInspection()
 
+                    navController.popBackStack(
+                        CivisRoutes.StaffHome,
+                        false
+                    )
+
                     navController.navigate(
                         CivisRoutes.InspectionConfirmation
-                    ) {
-                        popUpTo(CivisRoutes.CaseDetails) {
-                            inclusive = true
-                        }
-                    }
+                    )
                 }
             )
         }
