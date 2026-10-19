@@ -1,11 +1,8 @@
 package com.civis.it114.ui.screens.resident
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,29 +24,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CaseStatusScreen() {
+fun CaseStatusScreen(
+    caseId: String,
+    status: String,
+    onViewCase: () -> Unit,
+    onBackToHome: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(28.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(120.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
         Box(
             modifier = Modifier
-                .size(144.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
+                .size(72.dp)
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "✓",
-                style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.Normal
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold
             )
         }
 
@@ -63,15 +64,15 @@ fun CaseStatusScreen() {
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "Your issue has been successfully submitted.",
+            text = "Your report has been submitted successfully.",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         Column(
             modifier = Modifier
@@ -79,74 +80,77 @@ fun CaseStatusScreen() {
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.outline,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(10.dp)
                 )
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+                .padding(16.dp)
         ) {
             Text(
                 text = "Case ID",
                 style = MaterialTheme.typography.labelMedium
             )
 
+            Spacer(modifier = Modifier.height(4.dp))
+
             Text(
-                text = "CIV-0001",
-                style = MaterialTheme.typography.headlineSmall
+                text = caseId,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             Text(
                 text = "Status",
                 style = MaterialTheme.typography.labelMedium
             )
 
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                    .padding(horizontal = 18.dp, vertical = 7.dp)
-            ) {
-                Text(
-                    text = "Submitted",
-                    style = MaterialTheme.typography.labelMedium
-                )
-            }
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = status,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        OutlinedButton(
+            onClick = onViewCase,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text("View Case")
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(
+            onClick = onBackToHome,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text("Back to Home")
         }
 
         Spacer(modifier = Modifier.weight(1f))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            OutlinedButton(
-                onClick = {},
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp)
-            ) {
-                Text(text = "View Case")
-            }
-
-            Button(
-                onClick = {},
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp)
-            ) {
-                Text(text = "Back to Home")
-            }
-        }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Report Submitted",
+    showBackground = true
+)
 @Composable
 private fun CaseStatusScreenPreview() {
     MaterialTheme {
-        CaseStatusScreen()
+        CaseStatusScreen(
+            caseId = "CIV-0001",
+            status = "Submitted",
+            onViewCase = {},
+            onBackToHome = {}
+        )
     }
 }

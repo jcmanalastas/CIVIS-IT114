@@ -3,12 +3,9 @@ package com.civis.it114
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import com.civis.it114.ui.screens.resident.ReportIssueScreen
-import com.civis.it114.ui.screens.resident.ResidentHomeScreen
+import androidx.compose.runtime.Composable
+import com.civis.it114.ui.CivisNavigation
+import com.civis.it114.ui.rememberCivisAppState
 import com.civis.it114.ui.theme.CIVISTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,13 +14,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CIVISTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    ReportIssueScreen (onContinue = {}, onCancel = {})
-                }
+                CivisApp()
             }
         }
     }
+}
+
+@Composable
+fun CivisApp() {
+    val appState = rememberCivisAppState()
+
+    CivisNavigation(
+        appState = appState
+    )
 }

@@ -1,7 +1,6 @@
 package com.civis.it114.ui.screens.resident
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +24,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SubmitConfirmationScreen() {
+fun SubmitConfirmationScreen(
+    onCancel: () -> Unit,
+    onSubmit: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,7 +39,8 @@ fun SubmitConfirmationScreen() {
         Box(
             modifier = Modifier
                 .size(72.dp)
-                .background(
+                .border(
+                    width = 2.dp,
                     color = MaterialTheme.colorScheme.primary,
                     shape = CircleShape
                 ),
@@ -45,7 +48,6 @@ fun SubmitConfirmationScreen() {
         ) {
             Text(
                 text = "!",
-                color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -63,44 +65,51 @@ fun SubmitConfirmationScreen() {
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Are you sure you want to submit this report? " +
-                "Once submitted, a case ID will be created and " +
-                "the status will be set to Submitted.",
+            text = "Please confirm that the report details are correct before submitting.",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedButton(
-                onClick = {},
+                onClick = onCancel,
                 modifier = Modifier
                     .weight(1f)
-                    .height(48.dp)
+                    .height(50.dp)
             ) {
-                Text(text = "Cancel")
+                Text("Cancel")
             }
 
+            Spacer(modifier = Modifier.size(12.dp))
+
             Button(
-                onClick = {},
+                onClick = onSubmit,
                 modifier = Modifier
                     .weight(1f)
-                    .height(48.dp)
+                    .height(50.dp)
             ) {
-                Text(text = "Submit")
+                Text("Submit")
             }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Submit Confirmation",
+    showBackground = true
+)
 @Composable
 private fun SubmitConfirmationScreenPreview() {
     MaterialTheme {
-        SubmitConfirmationScreen()
+        SubmitConfirmationScreen(
+            onCancel = {},
+            onSubmit = {}
+        )
     }
 }

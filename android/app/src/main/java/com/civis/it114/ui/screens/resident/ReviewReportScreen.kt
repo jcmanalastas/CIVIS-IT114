@@ -1,8 +1,6 @@
 package com.civis.it114.ui.screens.resident
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,149 +9,189 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ReviewReportScreen() {
+fun ReviewReportScreen(
+    category: String,
+    description: String,
+    location: String,
+    photoAdded: Boolean,
+    onBack: () -> Unit,
+    onEdit: () -> Unit,
+    onSubmitReport: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .padding(20.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "‹",
-                style = MaterialTheme.typography.headlineMedium
-            )
-
-            Text(
-                text = "Review Report",
-                modifier = Modifier.padding(start = 12.dp),
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
-
-        Text(
-            text = "Please review your report details before continuing.",
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Text(
-                text = "Issue Category",
-                style = MaterialTheme.typography.titleSmall
-            )
-            ReviewValueBox(value = "Broken Streetlight")
-        }
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Text(
-                text = "Description",
-                style = MaterialTheme.typography.titleSmall
-            )
-            ReviewValueBox(value = "Streetlight is not working.")
-        }
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Text(
-                text = "Location",
-                style = MaterialTheme.typography.titleSmall
-            )
-            ReviewValueBox(value = "Sample street location")
-        }
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Text(
-                text = "Photo",
-                style = MaterialTheme.typography.titleSmall
-            )
+            TextButton(
+                onClick = onBack
+            ) {
+                Text(
+                    text = "‹",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
 
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .border(
-                        BorderStroke(
-                            1.dp,
-                            MaterialTheme.colorScheme.outline
-                        ),
-                        MaterialTheme.shapes.small
-                    ),
+                modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Photo preview")
+                Text(
+                    text = "Review Report",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.size(48.dp))
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ReviewSection(
+            label = "Category",
+            value = category
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        ReviewSection(
+            label = "Description",
+            value = description
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        ReviewSection(
+            label = "Location",
+            value = location
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        Text(
+            text = "Photo",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            if (photoAdded) {
+                Text(
+                    text = "Photo Added",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            } else {
+                Text(
+                    text = "No Photo Added",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        OutlinedButton(
+            onClick = onEdit,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
         ) {
-            OutlinedButton(
-                onClick = {},
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "Back")
-            }
+            Text("Edit")
+        }
 
-            Button(
-                onClick = {},
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "Continue")
-            }
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(
+            onClick = onSubmitReport,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text("Submit Report")
         }
     }
 }
 
 @Composable
-private fun ReviewValueBox(value: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                BorderStroke(
-                    1.dp,
-                    MaterialTheme.colorScheme.outline
-                ),
-                MaterialTheme.shapes.small
-            )
-            .padding(12.dp)
+private fun ReviewSection(
+    label: String,
+    value: String
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = value)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = value,
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(14.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Review Report",
+    showBackground = true
+)
 @Composable
 private fun ReviewReportScreenPreview() {
     MaterialTheme {
-        ReviewReportScreen()
+        ReviewReportScreen(
+            category = "Broken Streetlight",
+            description = "Streetlight is not working at night.",
+            location = "Brgy. Mapag, Laguna",
+            photoAdded = true,
+            onBack = {},
+            onEdit = {},
+            onSubmitReport = {}
+        )
     }
 }
