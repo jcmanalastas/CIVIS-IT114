@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.civis.it114.ui.screens.RoleSelectionScreen
 import com.civis.it114.ui.screens.resident.CaseStatusScreen
 import com.civis.it114.ui.screens.resident.ReportIssueScreen
 import com.civis.it114.ui.screens.resident.ResidentHomeScreen
@@ -16,9 +17,11 @@ import com.civis.it114.ui.screens.staff.StaffConfirmationScreen
 import com.civis.it114.ui.screens.staff.StaffHomeScreen
 
 object CivisRoutes {
+    const val RoleSelection = "role_selection"
     const val ResidentHome = "resident_home"
     const val ReportIssue = "report_issue"
     const val ReviewReport = "review_report"
+    const val ViewReport = "view_report"
     const val SubmitConfirmation = "submit_confirmation"
     const val CaseStatus = "case_status"
     const val StaffHome = "staff_home"
@@ -37,8 +40,19 @@ fun CivisNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = CivisRoutes.ResidentHome
+        startDestination = CivisRoutes.RoleSelection
     ) {
+        composable(CivisRoutes.RoleSelection) {
+            RoleSelectionScreen(
+                onViewAsResident = {
+                    navController.navigate(CivisRoutes.ResidentHome)
+                },
+                onViewAsStaff = {
+                    navController.navigate(CivisRoutes.StaffHome)
+                }
+            )
+        }
+
         composable(CivisRoutes.ResidentHome) {
             ResidentHomeScreen(
                 hasReport = appState.hasReport,
@@ -56,8 +70,14 @@ fun CivisNavigation(
                 },
                 onViewReport = {
                     if (appState.hasReport) {
-                        navController.navigate(CivisRoutes.CaseStatus)
+                        navController.navigate(CivisRoutes.ViewReport)
                     }
+                },
+                onBack = {
+                    navController.popBackStack(
+                        CivisRoutes.RoleSelection,
+                        false
+                    )
                 }
             )
         }
@@ -96,6 +116,7 @@ fun CivisNavigation(
                 description = appState.reportDescription,
                 location = appState.reportLocation,
                 photoAdded = appState.reportPhotoAdded,
+                submitted = false,
                 onBack = {
                     navController.popBackStack()
                 },
@@ -103,7 +124,31 @@ fun CivisNavigation(
                     navController.popBackStack()
                 },
                 onSubmitReport = {
-                    navController.navigate(CivisRoutes.SubmitConfirmation)
+                    navController.navigate(
+                        CivisRoutes.SubmitConfirmation
+                    )
+                },
+                onBackToHome = {}
+            )
+        }
+
+        composable(CivisRoutes.ViewReport) {
+            ReviewReportScreen(
+                category = appState.reportCategory,
+                description = appState.reportDescription,
+                location = appState.reportLocation,
+                photoAdded = appState.reportPhotoAdded,
+                submitted = true,
+                onBack = {
+                    navController.popBackStack()
+                },
+                onEdit = {},
+                onSubmitReport = {},
+                onBackToHome = {
+                    navController.popBackStack(
+                        CivisRoutes.ResidentHome,
+                        false
+                    )
                 }
             )
         }
@@ -115,7 +160,12 @@ fun CivisNavigation(
                 },
                 onSubmit = {
                     appState.submitReport()
-                    navController.navigate(CivisRoutes.CaseStatus)
+
+                    navController.navigate(CivisRoutes.CaseStatus) {
+                        popUpTo(CivisRoutes.ReportIssue) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -125,14 +175,13 @@ fun CivisNavigation(
                 caseId = appState.caseId,
                 status = appState.caseStatus,
                 onViewCase = {
-                    navController.navigate(CivisRoutes.ReviewReport)
+                    navController.navigate(CivisRoutes.ViewReport)
                 },
                 onBackToHome = {
-                    navController.navigate(CivisRoutes.ResidentHome) {
-                        popUpTo(CivisRoutes.ResidentHome) {
-                            inclusive = false
-                        }
-                    }
+                    navController.popBackStack(
+                        CivisRoutes.ResidentHome,
+                        false
+                    )
                 }
             )
         }
@@ -157,6 +206,12 @@ fun CivisNavigation(
                 },
                 onViewCase = {
                     navController.navigate(CivisRoutes.CaseDetails)
+                },
+                onBack = {
+                    navController.popBackStack(
+                        CivisRoutes.RoleSelection,
+                        false
+                    )
                 }
             )
         }
@@ -192,9 +247,14 @@ fun CivisNavigation(
                 },
                 onAssignCase = {
                     appState.assignCase()
+
                     navController.navigate(
                         CivisRoutes.AssignmentConfirmation
-                    )
+                    ) {
+                        popUpTo(CivisRoutes.CaseDetails) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onRecordInspection = {
                     navController.navigate(
@@ -203,6 +263,7 @@ fun CivisNavigation(
                 },
                 onUpdateCase = {
                     appState.prepareCaseUpdate()
+
                     navController.navigate(
                         CivisRoutes.CaseUpdate
                     )
@@ -219,11 +280,10 @@ fun CivisNavigation(
                 },
                 status = appState.caseStatus,
                 onBackToHome = {
-                    navController.navigate(CivisRoutes.StaffHome) {
-                        popUpTo(CivisRoutes.StaffHome) {
-                            inclusive = false
-                        }
-                    }
+                    navController.popBackStack(
+                        CivisRoutes.StaffHome,
+                        false
+                    )
                 }
             )
         }
@@ -258,9 +318,14 @@ fun CivisNavigation(
                 },
                 onSaveInspection = {
                     appState.saveInspection()
+
                     navController.navigate(
                         CivisRoutes.InspectionConfirmation
-                    )
+                    ) {
+                        popUpTo(CivisRoutes.CaseDetails) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -274,11 +339,10 @@ fun CivisNavigation(
                 },
                 status = appState.caseStatus,
                 onBackToHome = {
-                    navController.navigate(CivisRoutes.StaffHome) {
-                        popUpTo(CivisRoutes.StaffHome) {
-                            inclusive = false
-                        }
-                    }
+                    navController.popBackStack(
+                        CivisRoutes.StaffHome,
+                        false
+                    )
                 }
             )
         }
@@ -305,11 +369,11 @@ fun CivisNavigation(
                 },
                 onSaveUpdate = {
                     appState.saveCaseUpdate()
-                    navController.navigate(CivisRoutes.StaffHome) {
-                        popUpTo(CivisRoutes.StaffHome) {
-                            inclusive = false
-                        }
-                    }
+
+                    navController.popBackStack(
+                        CivisRoutes.StaffHome,
+                        false
+                    )
                 }
             )
         }

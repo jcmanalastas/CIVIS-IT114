@@ -33,7 +33,8 @@ fun StaffHomeScreen(
     category: String,
     location: String,
     caseStatus: String,
-    onViewCase: () -> Unit
+    onViewCase: () -> Unit,
+    onBack: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -47,7 +48,9 @@ fun StaffHomeScreen(
                     vertical = 16.dp
                 )
         ) {
-            StaffLogo()
+            StaffHeader(
+                onBack = onBack
+            )
 
             Spacer(modifier = Modifier.height(36.dp))
 
@@ -128,29 +131,46 @@ fun StaffHomeScreen(
 }
 
 @Composable
-private fun StaffLogo() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+private fun StaffHeader(
+    onBack: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(18.dp)
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(4.dp)
-                )
-        )
+        TextButton(
+            onClick = onBack,
+            modifier = Modifier.align(Alignment.CenterStart)
+        ) {
+            Text(
+                text = "‹",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
 
-        Spacer(modifier = Modifier.size(8.dp))
+        Row(
+            modifier = Modifier.align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(18.dp)
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+            )
 
-        Text(
-            text = "CIVIS",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
+            Spacer(modifier = Modifier.size(8.dp))
+
+            Text(
+                text = "CIVIS",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
@@ -262,41 +282,38 @@ private fun StaffBottomBar() {
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TextButton(
-            onClick = {},
+        StaffBottomBarLabel(
+            symbol = "⌂",
+            label = "Home",
             modifier = Modifier.weight(1f)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("⌂")
-                Text("Home")
-            }
-        }
+        )
 
-        TextButton(
-            onClick = {},
+        StaffBottomBarLabel(
+            symbol = "▤",
+            label = "Cases",
             modifier = Modifier.weight(1f)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("▤")
-                Text("Cases")
-            }
-        }
+        )
 
-        TextButton(
-            onClick = {},
+        StaffBottomBarLabel(
+            symbol = "○",
+            label = "Profile",
             modifier = Modifier.weight(1f)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("○")
-                Text("Profile")
-            }
-        }
+        )
+    }
+}
+
+@Composable
+private fun StaffBottomBarLabel(
+    symbol: String,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(symbol)
+        Text(label)
     }
 }
 
@@ -316,7 +333,8 @@ private fun StaffHomePendingPreview() {
             category = "Broken Streetlight",
             location = "Brgy. Mapag, Laguna",
             caseStatus = "Pending",
-            onViewCase = {}
+            onViewCase = {},
+            onBack = {}
         )
     }
 }
@@ -337,7 +355,8 @@ private fun StaffHomeAssignedPreview() {
             category = "Broken Streetlight",
             location = "Brgy. Mapag, Laguna",
             caseStatus = "Assigned",
-            onViewCase = {}
+            onViewCase = {},
+            onBack = {}
         )
     }
 }
@@ -358,7 +377,8 @@ private fun StaffHomeResolvedPreview() {
             category = "Broken Streetlight",
             location = "Brgy. Mapag, Laguna",
             caseStatus = "Resolved",
-            onViewCase = {}
+            onViewCase = {},
+            onBack = {}
         )
     }
 }
