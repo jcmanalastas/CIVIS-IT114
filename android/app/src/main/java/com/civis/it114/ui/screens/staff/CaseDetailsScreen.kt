@@ -1,8 +1,7 @@
 package com.civis.it114.ui.screens.staff
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,34 +10,74 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+private val priorities = listOf(
+    "Low",
+    "Medium",
+    "High"
+)
+
+private val staffMembers = listOf(
+    "Staff Member 1",
+    "Staff Member 2"
+)
+
 @Composable
-fun CaseDetailsScreen() {
+fun CaseDetailsScreen(
+    caseId: String,
+    category: String,
+    date: String,
+    status: String,
+    description: String,
+    location: String,
+    priority: String,
+    assignedStaff: String,
+    onPriorityChange: (String) -> Unit,
+    onAssignedStaffChange: (String) -> Unit,
+    onBack: () -> Unit,
+    onAssignCase: () -> Unit,
+    onRecordInspection: () -> Unit,
+    onUpdateCase: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 24.dp, vertical = 20.dp)
+            .padding(20.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp),
+                .height(48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "<",
-                style = MaterialTheme.typography.headlineSmall
-            )
+            TextButton(
+                onClick = onBack
+            ) {
+                Text(
+                    text = "‹",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
 
             Box(
                 modifier = Modifier.weight(1f),
@@ -46,187 +85,408 @@ fun CaseDetailsScreen() {
             ) {
                 Text(
                     text = "Case Details",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
-            Box(modifier = Modifier.weight(0.12f))
+            Spacer(modifier = Modifier.size(48.dp))
         }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    1.dp,
-                    MaterialTheme.colorScheme.outline,
-                    RoundedCornerShape(8.dp)
-                )
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(0.9f)
-                    .height(54.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        RoundedCornerShape(6.dp)
-                    )
-            )
-
-            Column(
-                modifier = Modifier
-                    .weight(2.6f)
-                    .padding(start = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                Text(text = "CIV-0001")
-                Text(text = "Broken Streetlight")
-                Text(text = "Sept 10, 2026")
-            }
-
-            Column(
-                modifier = Modifier.weight(1.1f),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(text = "Status")
-
-                Box(
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.secondaryContainer,
-                            RoundedCornerShape(20.dp)
-                        )
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
-                ) {
-                    Text(text = "Pending")
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        Text(text = "Description")
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(76.dp)
-                .border(
-                    1.dp,
-                    MaterialTheme.colorScheme.outline,
-                    RoundedCornerShape(8.dp)
-                )
-                .padding(12.dp),
-            contentAlignment = Alignment.TopStart
-        ) {
-            Text(text = "Streetlight is not working at night.")
-        }
-
-        Text(
-            text = "0/500",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = "Location")
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SelectionField(
-            value = "Brgy. Mapua, Laguna",
-            showArrow = false
-        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Priority",
-                modifier = Modifier.weight(1f)
-            )
-
-            SelectionField(
-                value = "Medium",
-                showArrow = true,
-                modifier = Modifier.weight(2f)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Assign to Staff",
-                modifier = Modifier.weight(1f)
-            )
-
-            SelectionField(
-                value = "Select Staff Member",
-                showArrow = true,
-                modifier = Modifier.weight(2f)
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Button(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-        ) {
-            Text(text = "Assign Case")
-        }
-    }
-}
-
-@Composable
-private fun SelectionField(
-    value: String,
-    showArrow: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .height(44.dp)
-            .border(
-                1.dp,
-                MaterialTheme.colorScheme.outline,
-                RoundedCornerShape(8.dp)
-            )
-            .padding(horizontal = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = value,
-            modifier = Modifier.weight(1f)
+        CaseSummary(
+            caseId = caseId,
+            category = category,
+            date = date,
+            status = status
         )
 
-        if (showArrow) {
-            Text(text = "▼")
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "Description",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = description,
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(12.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        Text(
+            text = "Location",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = location,
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(12.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        if (assignedStaff.isBlank()) {
+            PrioritySelector(
+                selectedPriority = priority,
+                onPrioritySelected = onPriorityChange
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            StaffSelector(
+                selectedStaff = assignedStaff,
+                onStaffSelected = onAssignedStaffChange
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = onAssignCase,
+                enabled = priority.isNotBlank() &&
+                        assignedStaff.isNotBlank(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Assign Case")
+            }
+        } else {
+            Text(
+                text = "Priority",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = priority,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(12.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Assigned Staff",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = assignedStaff,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(12.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            OutlinedButton(
+                onClick = onRecordInspection,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Record Inspection")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = onUpdateCase,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Update Case")
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun CaseDetailsScreenPreview() {
+private fun CaseSummary(
+    caseId: String,
+    category: String,
+    date: String,
+    status: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = RoundedCornerShape(10.dp)
+            )
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(8.dp)
+                )
+        )
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 12.dp)
+        ) {
+            Text(
+                text = caseId,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            Text(
+                text = category,
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            Text(
+                text = date,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        Text(
+            text = status,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun PrioritySelector(
+    selectedPriority: String,
+    onPrioritySelected: (String) -> Unit
+) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    Column {
+        Text(
+            text = "Priority",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = selectedPriority,
+                onValueChange = {},
+                readOnly = true,
+                placeholder = {
+                    Text("Select Priority")
+                },
+                trailingIcon = {
+                    Text(
+                        text = "▼",
+                        modifier = Modifier.clickable {
+                            expanded = true
+                        }
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        expanded = true
+                    }
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                priorities.forEach { priority ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(priority)
+                        },
+                        onClick = {
+                            onPrioritySelected(priority)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StaffSelector(
+    selectedStaff: String,
+    onStaffSelected: (String) -> Unit
+) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    Column {
+        Text(
+            text = "Assign to Staff",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = selectedStaff,
+                onValueChange = {},
+                readOnly = true,
+                placeholder = {
+                    Text("Select Staff Member")
+                },
+                trailingIcon = {
+                    Text(
+                        text = "▼",
+                        modifier = Modifier.clickable {
+                            expanded = true
+                        }
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        expanded = true
+                    }
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                staffMembers.forEach { staff ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(staff)
+                        },
+                        onClick = {
+                            onStaffSelected(staff)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview(
+    name = "Case Details Before Assignment",
+    showBackground = true
+)
+@Composable
+private fun CaseDetailsBeforeAssignmentPreview() {
     MaterialTheme {
-        CaseDetailsScreen()
+        CaseDetailsScreen(
+            caseId = "CIV-0001",
+            category = "Broken Streetlight",
+            date = "Sept. 10, 2026",
+            status = "Pending",
+            description = "Streetlight is not working at night.",
+            location = "Brgy. Mapag, Laguna",
+            priority = "Medium",
+            assignedStaff = "",
+            onPriorityChange = {},
+            onAssignedStaffChange = {},
+            onBack = {},
+            onAssignCase = {},
+            onRecordInspection = {},
+            onUpdateCase = {}
+        )
+    }
+}
+
+@Preview(
+    name = "Case Details Assigned",
+    showBackground = true
+)
+@Composable
+private fun CaseDetailsAssignedPreview() {
+    MaterialTheme {
+        CaseDetailsScreen(
+            caseId = "CIV-0001",
+            category = "Broken Streetlight",
+            date = "Sept. 10, 2026",
+            status = "Assigned",
+            description = "Streetlight is not working at night.",
+            location = "Brgy. Mapag, Laguna",
+            priority = "Medium",
+            assignedStaff = "Staff Member 1",
+            onPriorityChange = {},
+            onAssignedStaffChange = {},
+            onBack = {},
+            onAssignCase = {},
+            onRecordInspection = {},
+            onUpdateCase = {}
+        )
     }
 }

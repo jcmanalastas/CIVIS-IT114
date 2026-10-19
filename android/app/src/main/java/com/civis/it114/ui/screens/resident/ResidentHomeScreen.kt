@@ -1,6 +1,5 @@
 package com.civis.it114.ui.screens.resident
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,13 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,32 +26,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ResidentHomeScreen() {
+fun ResidentHomeScreen(
+    hasReport: Boolean,
+    caseId: String,
+    category: String,
+    location: String,
+    status: String,
+    onReportIssue: () -> Unit,
+    onTrackReports: () -> Unit,
+    onViewReport: () -> Unit
+) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .padding(
+                    horizontal = 24.dp,
+                    vertical = 16.dp
+                )
         ) {
-            CivisLogo()
+            ResidentLogo()
 
-            Spacer(modifier = Modifier.height(48.dp))
-
-            Text(
-                text = "Good day,",
-                style = MaterialTheme.typography.titleSmall
-            )
+            Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "Resident!",
+                text = "Good day, Resident!",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = "How can we help your community?",
@@ -63,34 +68,26 @@ fun ResidentHomeScreen() {
             Spacer(modifier = Modifier.height(28.dp))
 
             Button(
-                onClick = {},
+                onClick = onReportIssue,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(10.dp)
+                    .height(50.dp)
             ) {
-                Text(
-                    text = "+       Report an Issue",
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Text("+ Report an Issue")
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             OutlinedButton(
-                onClick = {},
+                onClick = onTrackReports,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(10.dp)
+                    .height(50.dp)
             ) {
-                Text(
-                    text = "=       Track My Reports",
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Text("Track My Reports")
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -99,158 +96,247 @@ fun ResidentHomeScreen() {
             ) {
                 Text(
                     text = "Recent Report",
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
 
-                Text(
-                    text = "View All",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                TextButton(
+                    onClick = onTrackReports
+                ) {
+                    Text("View All")
+                }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            EmptyReportsMessage()
+            if (hasReport) {
+                RecentReportCard(
+                    caseId = caseId,
+                    category = category,
+                    location = location,
+                    status = status,
+                    onViewReport = onViewReport
+                )
+            } else {
+                Spacer(modifier = Modifier.weight(1f))
 
-            Spacer(modifier = Modifier.weight(1f))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "No Reports Yet",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Your submitted reports will appear here.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+            }
+
+            if (hasReport) {
+                Spacer(modifier = Modifier.weight(1f))
+            }
         }
 
-        ResidentBottomBar()
+        ResidentBottomBar(
+            onHome = {},
+            onReports = onTrackReports,
+            onProfile = {}
+        )
     }
 }
 
 @Composable
-private fun CivisLogo() {
+private fun ResidentLogo() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 24.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(28.dp)
-                .background(
+                .size(18.dp)
+                .border(
+                    width = 2.dp,
                     color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
+                    shape = RoundedCornerShape(4.dp)
                 )
         )
 
+        Spacer(modifier = Modifier.size(8.dp))
+
         Text(
             text = "CIVIS",
-            modifier = Modifier.padding(start = 6.dp),
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
     }
 }
 
 @Composable
-private fun EmptyReportsMessage() {
+private fun RecentReportCard(
+    caseId: String,
+    category: String,
+    location: String,
+    status: String,
+    onViewReport: () -> Unit
+) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "No Reports Yet",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Have an issue to report?\n" +
-                "Submit your first report to help improve your community.",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Your reports will appear here once submitted.",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-private fun ResidentBottomBar() {
-    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline
-            ),
-        tonalElevation = 2.dp
+                color = MaterialTheme.colorScheme.outline,
+                shape = RoundedCornerShape(10.dp)
+            )
+            .padding(16.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BottomBarItem(
-                symbol = "⌂",
-                label = "Home",
-                selected = true
+            Text(
+                text = caseId,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
             )
 
-            BottomBarItem(
-                symbol = "▤",
-                label = "Reports"
+            Text(
+                text = status,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold
             )
+        }
 
-            BottomBarItem(
-                symbol = "◎",
-                label = "Profile"
-            )
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = category,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = location,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        OutlinedButton(
+            onClick = onViewReport,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("View Report")
         }
     }
 }
 
 @Composable
-private fun BottomBarItem(
-    symbol: String,
-    label: String,
-    selected: Boolean = false
+private fun ResidentBottomBar(
+    onHome: () -> Unit,
+    onReports: () -> Unit,
+    onProfile: () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(72.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = symbol,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = if (selected) {
-                FontWeight.Bold
-            } else {
-                FontWeight.Normal
+        TextButton(
+            onClick = onHome,
+            modifier = Modifier.weight(1f)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("⌂")
+                Text("Home")
             }
+        }
+
+        TextButton(
+            onClick = onReports,
+            modifier = Modifier.weight(1f)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("▤")
+                Text("Reports")
+            }
+        }
+
+        TextButton(
+            onClick = onProfile,
+            modifier = Modifier.weight(1f)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("○")
+                Text("Profile")
+            }
+        }
+    }
+}
+
+@Preview(
+    name = "Resident Home Empty",
+    showBackground = true
+)
+@Composable
+private fun ResidentHomeEmptyPreview() {
+    MaterialTheme {
+        ResidentHomeScreen(
+            hasReport = false,
+            caseId = "",
+            category = "",
+            location = "",
+            status = "",
+            onReportIssue = {},
+            onTrackReports = {},
+            onViewReport = {}
         )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Resident Home With Report",
+    showBackground = true
+)
 @Composable
-private fun ResidentHomeScreenPreview() {
+private fun ResidentHomeWithReportPreview() {
     MaterialTheme {
-        ResidentHomeScreen()
+        ResidentHomeScreen(
+            hasReport = true,
+            caseId = "CIV-0001",
+            category = "Broken Streetlight",
+            location = "Brgy. Mapag, Laguna",
+            status = "Submitted",
+            onReportIssue = {},
+            onTrackReports = {},
+            onViewReport = {}
+        )
     }
 }
