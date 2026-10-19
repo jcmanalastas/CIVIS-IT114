@@ -29,9 +29,11 @@ fun ReviewReportScreen(
     description: String,
     location: String,
     photoAdded: Boolean,
+    submitted: Boolean,
     onBack: () -> Unit,
     onEdit: () -> Unit,
-    onSubmitReport: () -> Unit
+    onSubmitReport: () -> Unit,
+    onBackToHome: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -44,9 +46,7 @@ fun ReviewReportScreen(
                 .height(48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(
-                onClick = onBack
-            ) {
+            TextButton(onClick = onBack) {
                 Text(
                     text = "‹",
                     style = MaterialTheme.typography.headlineSmall
@@ -109,39 +109,47 @@ fun ReviewReportScreen(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            if (photoAdded) {
-                Text(
-                    text = "Photo Added",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            } else {
-                Text(
-                    text = "No Photo Added",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            Text(
+                text = if (photoAdded) {
+                    "Photo Added"
+                } else {
+                    "No Photo Added"
+                },
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        OutlinedButton(
-            onClick = onEdit,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-        ) {
-            Text("Edit")
-        }
+        if (submitted) {
+            Button(
+                onClick = onBackToHome,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Back to Home")
+            }
+        } else {
+            OutlinedButton(
+                onClick = onEdit,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text("Edit")
+            }
 
-        Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-        Button(
-            onClick = onSubmitReport,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text("Submit Report")
+            Button(
+                onClick = onSubmitReport,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Submit Report")
+            }
         }
     }
 }
@@ -177,21 +185,20 @@ private fun ReviewSection(
     }
 }
 
-@Preview(
-    name = "Review Report",
-    showBackground = true
-)
+@Preview(showBackground = true)
 @Composable
-private fun ReviewReportScreenPreview() {
+private fun ReviewReportPreview() {
     MaterialTheme {
         ReviewReportScreen(
             category = "Broken Streetlight",
             description = "Streetlight is not working at night.",
             location = "Brgy. Mapag, Laguna",
             photoAdded = true,
+            submitted = false,
             onBack = {},
             onEdit = {},
-            onSubmitReport = {}
+            onSubmitReport = {},
+            onBackToHome = {}
         )
     }
 }
