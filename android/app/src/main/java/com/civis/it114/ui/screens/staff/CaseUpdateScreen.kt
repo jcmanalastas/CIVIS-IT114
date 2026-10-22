@@ -1,5 +1,6 @@
 package com.civis.it114.ui.screens.staff
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -53,7 +55,13 @@ fun CaseUpdateScreen(
     var statusMenuExpanded by remember {
         mutableStateOf(false)
     }
+    var showDiscardDialog by remember { mutableStateOf(false) }
 
+    BackHandler {
+        if (!showDiscardDialog) {
+            showDiscardDialog = true
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,7 +75,7 @@ fun CaseUpdateScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = onBack
+                onClick = { showDiscardDialog = true }
             ) {
                 Text(
                     text = "‹",
@@ -226,6 +234,38 @@ fun CaseUpdateScreen(
         ) {
             Text("Save Update")
         }
+    }
+    if (showDiscardDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDiscardDialog = false
+            },
+            title = {
+                Text("Discard Changes?")
+            },
+            text = {
+                Text("Case update hasn't been saved yet. Are you sure you want to discard changes?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDiscardDialog = false
+                        onBack()
+                    }
+                ) {
+                    Text("Discard Changes")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDiscardDialog = false
+                    }
+                ) {
+                    Text("Continue Editing")
+                }
+            }
+        )
     }
 }
 

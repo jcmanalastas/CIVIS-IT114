@@ -183,7 +183,6 @@ fun ResidentHomeScreen(
 private fun ResidentHeader(
     onBack: () -> Unit
 ) {
-
     Box(
         modifier = Modifier
             .fillMaxWidth()

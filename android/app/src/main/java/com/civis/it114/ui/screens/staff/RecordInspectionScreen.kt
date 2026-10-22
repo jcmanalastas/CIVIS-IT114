@@ -1,5 +1,6 @@
 package com.civis.it114.ui.screens.staff
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -54,7 +56,9 @@ fun RecordInspectionScreen(
     var resultMenuExpanded by remember {
         mutableStateOf(false)
     }
+    var showDiscardDialog by remember { mutableStateOf(false) }
 
+    BackHandler(!showDiscardDialog) { showDiscardDialog = true}
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,7 +72,7 @@ fun RecordInspectionScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = onBack
+                onClick = { showDiscardDialog = true }
             ) {
                 Text(
                     text = "‹",
@@ -250,6 +254,38 @@ fun RecordInspectionScreen(
         ) {
             Text("Save Inspection Record")
         }
+    }
+    if (showDiscardDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDiscardDialog = false
+            },
+            title = {
+                Text("Discard Record Inspection?")
+            },
+            text = {
+                Text("Your inspection details haven't been saved. Are you sure you want to discard your changes?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDiscardDialog = false
+                        onBack()
+                    }
+                ) {
+                    Text("Discard Changes")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDiscardDialog = false
+                    }
+                ) {
+                    Text("Continue Editing")
+                }
+            }
+        )
     }
 }
 

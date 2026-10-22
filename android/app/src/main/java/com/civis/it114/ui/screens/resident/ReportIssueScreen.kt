@@ -61,6 +61,12 @@ fun ReportIssueScreen(
         mutableStateOf(false)
     }
 
+    BackHandler {
+        if (!showCancelDialog) {
+            showCancelDialog = true
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
