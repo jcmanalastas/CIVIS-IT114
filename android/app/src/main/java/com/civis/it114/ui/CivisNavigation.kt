@@ -74,10 +74,12 @@ fun CivisNavigation(
                     }
                 },
                 onBack = {
-                    navController.popBackStack(
-                        CivisRoutes.RoleSelection,
-                        false
-                    )
+                    navController.navigate(CivisRoutes.RoleSelection) {
+                        popUpTo(CivisRoutes.RoleSelection) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -211,10 +213,12 @@ fun CivisNavigation(
                     navController.navigate(CivisRoutes.CaseDetails)
                 },
                 onBack = {
-                    navController.popBackStack(
-                        CivisRoutes.RoleSelection,
-                        false
-                    )
+                    navController.navigate(CivisRoutes.RoleSelection) {
+                        popUpTo(CivisRoutes.RoleSelection) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
