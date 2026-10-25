@@ -1,6 +1,5 @@
 package com.civis.it114.ui.screens.resident
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,10 +20,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -43,18 +38,6 @@ fun ReviewReportScreen(
     onSubmitReport: () -> Unit,
     onBackToHome: () -> Unit
 ) {
-
-    var isNavigatingBack by remember {
-        mutableStateOf(false)
-    }
-
-    BackHandler(enabled = !isNavigatingBack) {
-        if (!isNavigatingBack) {
-            isNavigatingBack = true
-            onBack()
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,7 +51,9 @@ fun ReviewReportScreen(
                 .height(48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(onClick = onBack) {
+            TextButton(
+                onClick = onBack
+            ) {
                 Text(
                     text = "‹",
                     style = MaterialTheme.typography.headlineSmall
