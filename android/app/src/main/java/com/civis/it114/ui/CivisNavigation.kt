@@ -1,8 +1,11 @@
 package com.civis.it114.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.civis.it114.ui.screens.RoleSelectionScreen
 import com.civis.it114.ui.screens.resident.CaseStatusScreen
@@ -38,6 +41,12 @@ fun CivisNavigation(
 ) {
     val navController = rememberNavController()
 
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
+
+    BackHandler(
+        enabled = currentRoute == CivisRoutes.RoleSelection
+    ){}
     NavHost(
         navController = navController,
         startDestination = CivisRoutes.RoleSelection
@@ -74,10 +83,12 @@ fun CivisNavigation(
                     }
                 },
                 onBack = {
-                    navController.popBackStack(
-                        CivisRoutes.RoleSelection,
-                        false
-                    )
+                    navController.navigate(CivisRoutes.RoleSelection) {
+                        popUpTo(CivisRoutes.RoleSelection) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -118,7 +129,10 @@ fun CivisNavigation(
                 photoAdded = appState.reportPhotoAdded,
                 submitted = false,
                 onBack = {
-                    navController.popBackStack()
+                    navController.popBackStack(
+                        route = CivisRoutes.ReportIssue,
+                        inclusive = false
+                    )
                 },
                 onEdit = {
                     navController.popBackStack()
@@ -211,10 +225,12 @@ fun CivisNavigation(
                     navController.navigate(CivisRoutes.CaseDetails)
                 },
                 onBack = {
-                    navController.popBackStack(
-                        CivisRoutes.RoleSelection,
-                        false
-                    )
+                    navController.navigate(CivisRoutes.RoleSelection) {
+                        popUpTo(CivisRoutes.RoleSelection) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -246,7 +262,10 @@ fun CivisNavigation(
                     appState.assignedStaff = it
                 },
                 onBack = {
-                    navController.popBackStack()
+                    navController.popBackStack(
+                        route = CivisRoutes.StaffHome,
+                        inclusive = false
+                    )
                 },
                 onAssignCase = {
                     appState.assignCase()
