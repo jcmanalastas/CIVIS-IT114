@@ -54,19 +54,12 @@ fun CaseUpdateScreen(
     var statusMenuExpanded by remember {
         mutableStateOf(false)
     }
-    var showDiscardDialog by remember { mutableStateOf(false) }
 
-    BackHandler {
-        if (!showDiscardDialog) {
-            showDiscardDialog = true
-        }
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
-            .safeDrawingPadding()
     ) {
         Row(
             modifier = Modifier
@@ -75,7 +68,7 @@ fun CaseUpdateScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = { showDiscardDialog = true }
+                onClick = onBack
             ) {
                 Text(
                     text = "‹",
@@ -236,38 +229,6 @@ fun CaseUpdateScreen(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-    }
-    if (showDiscardDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                showDiscardDialog = false
-            },
-            title = {
-                Text("Discard Changes?")
-            },
-            text = {
-                Text("Case update hasn't been saved yet. Are you sure you want to discard changes?")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDiscardDialog = false
-                        onBack()
-                    }
-                ) {
-                    Text("Discard Changes")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showDiscardDialog = false
-                    }
-                ) {
-                    Text("Continue Editing")
-                }
-            }
-        )
     }
 }
 

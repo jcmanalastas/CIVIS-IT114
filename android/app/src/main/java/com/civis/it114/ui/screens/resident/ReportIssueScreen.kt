@@ -1,6 +1,5 @@
 package com.civis.it114.ui.screens.resident
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -59,22 +56,11 @@ fun ReportIssueScreen(
         mutableStateOf(false)
     }
 
-    var showCancelDialog by remember {
-        mutableStateOf(false)
-    }
-
-    BackHandler {
-        if (!showCancelDialog) {
-            showCancelDialog = true
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
-            .safeDrawingPadding()
     ) {
         Row(
             modifier = Modifier
@@ -83,9 +69,7 @@ fun ReportIssueScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = {
-                    showCancelDialog = true
-                }
+                onClick = onCancel
             ) {
                 Text(
                     text = "‹",
@@ -252,39 +236,6 @@ fun ReportIssueScreen(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-    }
-
-    if (showCancelDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                showCancelDialog = false
-            },
-            title = {
-                Text("Cancel Report?")
-            },
-            text = {
-                Text("Your current report information will be cleared.")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showCancelDialog = false
-                        onCancel()
-                    }
-                ) {
-                    Text("Cancel Report")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showCancelDialog = false
-                    }
-                ) {
-                    Text("Keep Editing")
-                }
-            }
-        )
     }
 }
 

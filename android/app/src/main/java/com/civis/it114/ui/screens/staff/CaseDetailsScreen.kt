@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -67,7 +66,6 @@ fun CaseDetailsScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
-            .safeDrawingPadding()
     ) {
         Row(
             modifier = Modifier
@@ -155,7 +153,7 @@ fun CaseDetailsScreen(
 
         Spacer(modifier = Modifier.height(18.dp))
 
-        if (assignedStaff.isBlank()) {
+        if (status == "Submitted" || status == "Pending") {
             PrioritySelector(
                 selectedPriority = priority,
                 onPrioritySelected = onPriorityChange
@@ -227,24 +225,26 @@ fun CaseDetailsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            OutlinedButton(
-                onClick = onRecordInspection,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            ) {
-                Text("Record Inspection")
+            if (status == "Assigned") {
+                OutlinedButton(
+                    onClick = onRecordInspection,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                ) {
+                    Text("Record Inspection")
+                }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Button(
-                onClick = onUpdateCase,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            ) {
-                Text("Update Case")
+            if (status == "For Inspection") {
+                Button(
+                    onClick = onUpdateCase,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                ) {
+                    Text("Update Case")
+                }
             }
         }
 
@@ -457,7 +457,7 @@ private fun CaseDetailsBeforeAssignmentPreview() {
             caseId = "CIV-0001",
             category = "Broken Streetlight",
             date = "Sept. 10, 2026",
-            status = "Pending",
+            status = "Submitted",
             description = "Streetlight is not working at night.",
             location = "Brgy. Mapua, Laguna",
             priority = "Medium",
