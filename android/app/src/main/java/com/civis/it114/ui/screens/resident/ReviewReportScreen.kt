@@ -12,8 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -57,6 +58,7 @@ fun ReviewReportScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp)
             .safeDrawingPadding()
     ) {
@@ -139,7 +141,7 @@ fun ReviewReportScreen(
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
 
         if (submitted) {
             Button(
@@ -171,6 +173,8 @@ fun ReviewReportScreen(
                 Text("Submit Report")
             }
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 

@@ -1,6 +1,6 @@
 package com.civis.it114.ui.screens.staff
 
-import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -65,6 +64,7 @@ fun CaseUpdateScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp)
             .safeDrawingPadding()
     ) {
@@ -222,7 +222,7 @@ fun CaseUpdateScreen(
                 .height(140.dp)
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onSaveUpdate,
@@ -234,6 +234,8 @@ fun CaseUpdateScreen(
         ) {
             Text("Save Update")
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
     }
     if (showDiscardDialog) {
         AlertDialog(
