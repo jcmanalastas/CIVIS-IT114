@@ -242,7 +242,8 @@ fun ReportIssueScreen(
             onClick = onContinue,
             enabled = selectedCategory.isNotBlank() &&
                     description.isNotBlank() &&
-                    location.isNotBlank(),
+                    location.isNotBlank() &&
+                    photoAdded,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
