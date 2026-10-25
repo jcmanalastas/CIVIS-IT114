@@ -14,14 +14,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -38,6 +43,10 @@ fun StaffHomeScreen(
     onViewCase: () -> Unit,
     onBack: () -> Unit
 ) {
+    var bottomBarMessage by remember {
+        mutableStateOf("")
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -129,7 +138,32 @@ fun StaffHomeScreen(
             Spacer(modifier = Modifier.height(20.dp))
         }
 
-        StaffBottomBar()
+        if (bottomBarMessage.isNotBlank()) {
+            Text(
+                text = bottomBarMessage,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    ),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        StaffBottomBar(
+            onHome = {
+                bottomBarMessage = "You're already on Home"
+            },
+            onCases = {
+                bottomBarMessage = "Cases function in progress"
+            },
+            onProfile = {
+                bottomBarMessage = "Profile function in progress"
+            }
+        )
     }
 }
 
@@ -262,7 +296,7 @@ private fun RecentCaseCard(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        OutlinedButton(
+        Button(
             onClick = onViewCase,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -272,7 +306,11 @@ private fun RecentCaseCard(
 }
 
 @Composable
-private fun StaffBottomBar() {
+private fun StaffBottomBar(
+    onHome: () -> Unit,
+    onCases: () -> Unit,
+    onProfile: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -285,38 +323,41 @@ private fun StaffBottomBar() {
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        StaffBottomBarLabel(
-            symbol = "⌂",
-            label = "Home",
+        TextButton(
+            onClick = onHome,
             modifier = Modifier.weight(1f)
-        )
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("⌂")
+                Text("Home")
+            }
+        }
 
-        StaffBottomBarLabel(
-            symbol = "▤",
-            label = "Cases",
+        TextButton(
+            onClick = onCases,
             modifier = Modifier.weight(1f)
-        )
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("▤")
+                Text("Cases")
+            }
+        }
 
-        StaffBottomBarLabel(
-            symbol = "○",
-            label = "Profile",
+        TextButton(
+            onClick = onProfile,
             modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-private fun StaffBottomBarLabel(
-    symbol: String,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(symbol)
-        Text(label)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("○")
+                Text("Profile")
+            }
+        }
     }
 }
 

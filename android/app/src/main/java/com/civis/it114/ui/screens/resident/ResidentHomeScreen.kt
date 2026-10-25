@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +20,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -40,10 +43,12 @@ fun ResidentHomeScreen(
     onViewReport: () -> Unit,
     onBack: () -> Unit
 ) {
+    var bottomBarMessage by remember {
+        mutableStateOf("")
+    }
+
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding()
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -165,9 +170,31 @@ fun ResidentHomeScreen(
             Spacer(modifier = Modifier.height(20.dp))
         }
 
+        if (bottomBarMessage.isNotBlank()) {
+            Text(
+                text = bottomBarMessage,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    ),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        }
+
         ResidentBottomBar(
-            hasReport = hasReport,
-            onReports = onTrackReports
+            onHome = {
+                bottomBarMessage = "You're already on Home"
+            },
+            onReports = {
+                bottomBarMessage = "Reports function in progress"
+            },
+            onProfile = {
+                bottomBarMessage = "Profile function in progress"
+            }
         )
     }
 }
@@ -280,8 +307,9 @@ private fun RecentReportCard(
 
 @Composable
 private fun ResidentBottomBar(
-    hasReport: Boolean,
-    onReports: () -> Unit
+    onHome: () -> Unit,
+    onReports: () -> Unit,
+    onProfile: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -295,52 +323,41 @@ private fun ResidentBottomBar(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BottomBarLabel(
-            symbol = "⌂",
-            label = "Home",
+        TextButton(
+            onClick = onHome,
             modifier = Modifier.weight(1f)
-        )
-
-        if (hasReport) {
-            TextButton(
-                onClick = onReports,
-                modifier = Modifier.weight(1f)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("▤")
-                    Text("Reports")
-                }
+                Text("⌂")
+                Text("Home")
             }
-        } else {
-            BottomBarLabel(
-                symbol = "▤",
-                label = "Reports",
-                modifier = Modifier.weight(1f)
-            )
         }
 
-        BottomBarLabel(
-            symbol = "○",
-            label = "Profile",
+        TextButton(
+            onClick = onReports,
             modifier = Modifier.weight(1f)
-        )
-    }
-}
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("▤")
+                Text("Reports")
+            }
+        }
 
-@Composable
-private fun BottomBarLabel(
-    symbol: String,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(symbol)
-        Text(label)
+        TextButton(
+            onClick = onProfile,
+            modifier = Modifier.weight(1f)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("○")
+                Text("Profile")
+            }
+        }
     }
 }
 
