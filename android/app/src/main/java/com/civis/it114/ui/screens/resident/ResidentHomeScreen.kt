@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -44,6 +46,7 @@ fun ResidentHomeScreen(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .padding(
                     horizontal = 24.dp,
                     vertical = 16.dp
@@ -132,13 +135,11 @@ fun ResidentHomeScreen(
                     status = status,
                     onViewReport = onViewReport
                 )
-
-                Spacer(modifier = Modifier.weight(1f))
             } else {
-                Spacer(modifier = Modifier.weight(1f))
-
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -156,9 +157,9 @@ fun ResidentHomeScreen(
                         textAlign = TextAlign.Center
                     )
                 }
-
-                Spacer(modifier = Modifier.weight(1f))
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
 
         ResidentBottomBar(

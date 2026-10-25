@@ -2,6 +2,7 @@ package com.civis.it114.ui.screens.staff
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,101 +33,140 @@ fun StaffConfirmationScreen(
     status: String,
     onBackToHome: () -> Unit
 ) {
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (maxHeight < 500.dp) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                StaffConfirmationContent(
+                    title = title,
+                    message = message,
+                    caseId = caseId,
+                    status = status,
+                    onBackToHome = onBackToHome
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+
+                StaffConfirmationContent(
+                    title = title,
+                    message = message,
+                    caseId = caseId,
+                    status = status,
+                    onBackToHome = onBackToHome
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun StaffConfirmationContent(
+    title: String,
+    message: String,
+    caseId: String,
+    status: String,
+    onBackToHome: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(72.dp)
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "✓",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold
+        )
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    Text(
+        text = title,
+        style = MaterialTheme.typography.headlineSmall,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
+    )
+
+    Spacer(modifier = Modifier.height(10.dp))
+
+    Text(
+        text = message,
+        style = MaterialTheme.typography.bodyMedium,
+        textAlign = TextAlign.Center
+    )
+
+    Spacer(modifier = Modifier.height(28.dp))
+
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = RoundedCornerShape(10.dp)
+            )
+            .padding(16.dp)
     ) {
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box(
-            modifier = Modifier
-                .size(72.dp)
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "✓",
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
         Text(
-            text = title,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
+            text = "Case ID",
+            style = MaterialTheme.typography.labelMedium
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
+            text = caseId,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = RoundedCornerShape(10.dp)
-                )
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Case ID",
-                style = MaterialTheme.typography.labelMedium
-            )
+        Text(
+            text = "Status",
+            style = MaterialTheme.typography.labelMedium
+        )
 
-            Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                text = caseId,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+        Text(
+            text = status,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+    }
 
-            Spacer(modifier = Modifier.height(14.dp))
+    Spacer(modifier = Modifier.height(28.dp))
 
-            Text(
-                text = "Status",
-                style = MaterialTheme.typography.labelMedium
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = status,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        Button(
-            onClick = onBackToHome,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text("Back to Home")
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
+    Button(
+        onClick = onBackToHome,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+    ) {
+        Text("Back to Home")
     }
 }
 

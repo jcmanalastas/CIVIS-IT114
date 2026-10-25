@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -57,6 +59,7 @@ fun RecordInspectionScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp)
     ) {
         Row(
@@ -234,7 +237,7 @@ fun RecordInspectionScreen(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onSaveInspection,
@@ -248,6 +251,8 @@ fun RecordInspectionScreen(
         ) {
             Text("Save Inspection Record")
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
