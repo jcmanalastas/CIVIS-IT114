@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 private val caseStatuses = listOf(
     "Assigned",
     "For Inspection",
+    "Needs Repair",
     "In Progress",
     "Resolved"
 )
@@ -53,6 +54,18 @@ fun CaseUpdateScreen(
 ) {
     var statusMenuExpanded by remember {
         mutableStateOf(false)
+    }
+
+    val notesLabel = if (selectedStatus == "Resolved") {
+        "Completion Notes"
+    } else {
+        "Update Notes"
+    }
+
+    val notesPlaceholder = if (selectedStatus == "Resolved") {
+        "Enter completion notes"
+    } else {
+        "Enter update notes"
     }
 
     Column(
@@ -197,7 +210,7 @@ fun CaseUpdateScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Completion Notes",
+            text = notesLabel,
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold
         )
@@ -208,7 +221,7 @@ fun CaseUpdateScreen(
             value = completionNotes,
             onValueChange = onCompletionNotesChange,
             placeholder = {
-                Text("Enter completion notes")
+                Text(notesPlaceholder)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -220,7 +233,7 @@ fun CaseUpdateScreen(
         Button(
             onClick = onSaveUpdate,
             enabled = selectedStatus.isNotBlank() &&
-                    completionNotes.isNotBlank(),
+                completionNotes.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)

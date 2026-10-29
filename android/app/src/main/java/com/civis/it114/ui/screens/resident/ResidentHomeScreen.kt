@@ -272,7 +272,7 @@ private fun RecentReportCard(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        OutlinedButton(
+        Button(
             onClick = onViewReport,
             modifier = Modifier.fillMaxWidth()
         ) {

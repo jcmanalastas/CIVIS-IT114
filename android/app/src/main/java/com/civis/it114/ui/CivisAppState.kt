@@ -31,6 +31,7 @@ class CivisAppState(
     reportDescriptionState: MutableState<String>,
     reportLocationState: MutableState<String>,
     reportPhotoAddedState: MutableState<Boolean>,
+    nextCaseNumberState: MutableState<Int>,
     caseIdsState: MutableState<List<String>>,
     caseCategoriesState: MutableState<List<String>>,
     caseDescriptionsState: MutableState<List<String>>,
@@ -48,7 +49,6 @@ class CivisAppState(
     caseCompletionNotesState: MutableState<List<String>>,
     caseIdState: MutableState<String>,
     caseStatusState: MutableState<String>,
-    caseDateState: MutableState<String>,
     priorityState: MutableState<String>,
     assignedStaffState: MutableState<String>,
     inspectionDateState: MutableState<String>,
@@ -63,6 +63,8 @@ class CivisAppState(
     var reportDescription by reportDescriptionState
     var reportLocation by reportLocationState
     var reportPhotoAdded by reportPhotoAddedState
+
+    var nextCaseNumber by nextCaseNumberState
 
     var caseIds by caseIdsState
     var caseCategories by caseCategoriesState
@@ -82,7 +84,6 @@ class CivisAppState(
 
     var caseId by caseIdState
     var caseStatus by caseStatusState
-    var caseDate by caseDateState
 
     var priority by priorityState
     var assignedStaff by assignedStaffState
@@ -119,9 +120,6 @@ class CivisAppState(
             }
         }
 
-    val hasReport: Boolean
-        get() = caseIds.isNotEmpty()
-
     val currentCase: CivisCase?
         get() = cases.firstOrNull {
             it.id == caseId
@@ -143,14 +141,10 @@ class CivisAppState(
     }
 
     fun submitReport() {
-        val highestCaseNumber = caseIds
-            .map {
-                it.removePrefix("CIV-").toIntOrNull() ?: 0
-            }
-            .maxOrNull() ?: 0
-
         val newCaseId =
-            "CIV-${(highestCaseNumber + 1).toString().padStart(4, '0')}"
+            "CIV-${nextCaseNumber.toString().padStart(4, '0')}"
+
+        nextCaseNumber += 1
 
         caseIds = caseIds + newCaseId
         caseCategories = caseCategories + reportCategory
@@ -170,7 +164,6 @@ class CivisAppState(
 
         caseId = newCaseId
         caseStatus = "Submitted"
-        caseDate = "Sept. 10, 2026"
         priority = "Medium"
         assignedStaff = ""
         inspectionDate = ""
@@ -190,7 +183,6 @@ class CivisAppState(
         if (index >= 0) {
             caseId = caseIds[index]
             caseStatus = caseStatuses[index]
-            caseDate = caseDates[index]
             priority = casePriorities[index]
             assignedStaff = caseAssignedStaff[index]
             inspectionDate = caseInspectionDates[index]
@@ -199,14 +191,6 @@ class CivisAppState(
             inspectionNotes = caseInspectionNotes[index]
             inspectionResult = caseInspectionResults[index]
             completionNotes = caseCompletionNotes[index]
-        }
-    }
-
-    fun selectLatestCase() {
-        val latestCaseId = caseIds.lastOrNull()
-
-        if (latestCaseId != null) {
-            selectCase(latestCaseId)
         }
     }
 
@@ -340,7 +324,6 @@ class CivisAppState(
 
             caseId = ""
             caseStatus = ""
-            caseDate = ""
             priority = ""
             assignedStaff = ""
             inspectionDate = ""
@@ -512,6 +495,10 @@ fun rememberCivisAppState(): CivisAppState {
         mutableStateOf(false)
     }
 
+    val nextCaseNumberState = rememberSaveable {
+        mutableStateOf(1)
+    }
+
     val caseIdsState = rememberSaveable {
         mutableStateOf(emptyList<String>())
     }
@@ -564,9 +551,6 @@ fun rememberCivisAppState(): CivisAppState {
     val caseStatusState = rememberSaveable {
         mutableStateOf("")
     }
-    val caseDateState = rememberSaveable {
-        mutableStateOf("Sept. 10, 2026")
-    }
 
     val priorityState = rememberSaveable {
         mutableStateOf("Medium")
@@ -604,6 +588,7 @@ fun rememberCivisAppState(): CivisAppState {
             reportDescriptionState = reportDescriptionState,
             reportLocationState = reportLocationState,
             reportPhotoAddedState = reportPhotoAddedState,
+            nextCaseNumberState = nextCaseNumberState,
             caseIdsState = caseIdsState,
             caseCategoriesState = caseCategoriesState,
             caseDescriptionsState = caseDescriptionsState,
@@ -621,7 +606,6 @@ fun rememberCivisAppState(): CivisAppState {
             caseCompletionNotesState = caseCompletionNotesState,
             caseIdState = caseIdState,
             caseStatusState = caseStatusState,
-            caseDateState = caseDateState,
             priorityState = priorityState,
             assignedStaffState = assignedStaffState,
             inspectionDateState = inspectionDateState,

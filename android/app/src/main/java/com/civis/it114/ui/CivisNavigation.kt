@@ -523,12 +523,12 @@ fun CivisNavigation(
                         navController.currentDestination?.route ==
                         CivisRoutes.CaseDetails
                     ) {
-                        appState.assignCase()
-
                         navController.popBackStack(
                             CivisRoutes.StaffHome,
                             false
                         )
+
+                        appState.assignCase()
 
                         navigateFrom(
                             navController,
