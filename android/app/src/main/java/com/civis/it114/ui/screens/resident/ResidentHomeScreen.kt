@@ -20,32 +20,23 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.civis.it114.ui.CivisCase
 
 @Composable
 fun ResidentHomeScreen(
-    hasReport: Boolean,
-    caseId: String,
-    category: String,
-    location: String,
-    status: String,
+    cases: List<CivisCase>,
     onReportIssue: () -> Unit,
     onTrackReports: () -> Unit,
-    onViewReport: () -> Unit,
+    onViewReport: (String) -> Unit,
     onBack: () -> Unit
 ) {
-    var bottomBarMessage by remember {
-        mutableStateOf("")
-    }
+    val latestCase = cases.lastOrNull()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -94,7 +85,7 @@ fun ResidentHomeScreen(
 
             OutlinedButton(
                 onClick = onTrackReports,
-                enabled = hasReport,
+                enabled = cases.isNotEmpty(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
@@ -115,7 +106,7 @@ fun ResidentHomeScreen(
                     fontWeight = FontWeight.Bold
                 )
 
-                if (hasReport) {
+                if (cases.isNotEmpty()) {
                     TextButton(
                         onClick = onTrackReports
                     ) {
@@ -135,66 +126,26 @@ fun ResidentHomeScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            if (hasReport) {
+            if (latestCase != null) {
                 RecentReportCard(
-                    caseId = caseId,
-                    category = category,
-                    location = location,
-                    status = status,
-                    onViewReport = onViewReport
+                    caseId = latestCase.id,
+                    category = latestCase.category,
+                    location = latestCase.location,
+                    status = latestCase.status,
+                    onViewReport = {
+                        onViewReport(latestCase.id)
+                    }
                 )
             } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "No Reports Yet",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Your submitted reports will appear here.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                EmptyReportsMessage()
             }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
 
-        if (bottomBarMessage.isNotBlank()) {
-            Text(
-                text = bottomBarMessage,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 8.dp
-                    ),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-        }
-
         ResidentBottomBar(
-            onHome = {
-                bottomBarMessage = "You're already on Home"
-            },
-            onReports = {
-                bottomBarMessage = "Reports function in progress"
-            },
-            onProfile = {
-                bottomBarMessage = "Profile function in progress"
-            }
+            onHome = {},
+            onReports = onTrackReports
         )
     }
 }
@@ -240,6 +191,31 @@ private fun ResidentHeader(
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Composable
+private fun EmptyReportsMessage() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "No Reports Yet",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Your submitted reports will appear here.",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -308,8 +284,7 @@ private fun RecentReportCard(
 @Composable
 private fun ResidentBottomBar(
     onHome: () -> Unit,
-    onReports: () -> Unit,
-    onProfile: () -> Unit
+    onReports: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -346,18 +321,6 @@ private fun ResidentBottomBar(
                 Text("Reports")
             }
         }
-
-        TextButton(
-            onClick = onProfile,
-            modifier = Modifier.weight(1f)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("○")
-                Text("Profile")
-            }
-        }
     }
 }
 
@@ -369,11 +332,7 @@ private fun ResidentBottomBar(
 private fun ResidentHomeEmptyPreview() {
     MaterialTheme {
         ResidentHomeScreen(
-            hasReport = false,
-            caseId = "",
-            category = "",
-            location = "",
-            status = "",
+            cases = emptyList(),
             onReportIssue = {},
             onTrackReports = {},
             onViewReport = {},
@@ -390,11 +349,25 @@ private fun ResidentHomeEmptyPreview() {
 private fun ResidentHomeWithReportPreview() {
     MaterialTheme {
         ResidentHomeScreen(
-            hasReport = true,
-            caseId = "CIV-0001",
-            category = "Broken Streetlight",
-            location = "Brgy. Mapua, Laguna",
-            status = "Submitted",
+            cases = listOf(
+                CivisCase(
+                    id = "CIV-0001",
+                    category = "Broken Streetlight",
+                    description = "Streetlight is not working at night.",
+                    location = "Brgy. Mapua, Laguna",
+                    photoAdded = true,
+                    date = "Sept. 10, 2026",
+                    status = "Submitted",
+                    priority = "Medium",
+                    assignedStaff = "",
+                    inspectionDate = "",
+                    inspectionStaffMember = "",
+                    inspectionFindings = "",
+                    inspectionNotes = "",
+                    inspectionResult = "",
+                    completionNotes = ""
+                )
+            ),
             onReportIssue = {},
             onTrackReports = {},
             onViewReport = {},

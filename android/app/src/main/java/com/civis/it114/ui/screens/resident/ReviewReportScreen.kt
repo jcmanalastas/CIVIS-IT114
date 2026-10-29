@@ -13,12 +13,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -32,11 +37,20 @@ fun ReviewReportScreen(
     location: String,
     photoAdded: Boolean,
     submitted: Boolean,
+    status: String,
+    inspectionNotes: String,
+    completionNotes: String,
+    canModify: Boolean,
     onBack: () -> Unit,
     onEdit: () -> Unit,
+    onDelete: () -> Unit,
     onSubmitReport: () -> Unit,
     onBackToHome: () -> Unit
 ) {
+    var showDeleteConfirmation by remember {
+        mutableStateOf(false)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -93,6 +107,36 @@ fun ReviewReportScreen(
             value = location
         )
 
+        if (submitted) {
+            Spacer(modifier = Modifier.height(18.dp))
+
+            ReviewSection(
+                label = "Status",
+                value = status
+            )
+
+            if (
+                status != "Resolved" &&
+                inspectionNotes.isNotBlank()
+            ) {
+                Spacer(modifier = Modifier.height(18.dp))
+
+                ReviewSection(
+                    label = "Inspection Notes",
+                    value = inspectionNotes
+                )
+            }
+
+            if (completionNotes.isNotBlank()) {
+                Spacer(modifier = Modifier.height(18.dp))
+
+                ReviewSection(
+                    label = "Completion Notes",
+                    value = completionNotes
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.height(18.dp))
 
         Text(
@@ -127,6 +171,32 @@ fun ReviewReportScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         if (submitted) {
+            OutlinedButton(
+                onClick = onEdit,
+                enabled = canModify,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text("Edit Report")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedButton(
+                onClick = {
+                    showDeleteConfirmation = true
+                },
+                enabled = canModify,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text("Delete Report")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             Button(
                 onClick = onBackToHome,
                 modifier = Modifier
@@ -158,6 +228,41 @@ fun ReviewReportScreen(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
+    }
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteConfirmation = false
+            },
+            title = {
+                Text("Delete Case?")
+            },
+            text = {
+                Text(
+                    "Are you sure you want to delete this case? This action cannot be undone."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        onDelete()
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
@@ -192,7 +297,10 @@ private fun ReviewSection(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Review Before Submission",
+    showBackground = true
+)
 @Composable
 private fun ReviewReportPreview() {
     MaterialTheme {
@@ -202,8 +310,91 @@ private fun ReviewReportPreview() {
             location = "Brgy. Mapua, Laguna",
             photoAdded = true,
             submitted = false,
+            status = "",
+            inspectionNotes = "",
+            completionNotes = "",
+            canModify = false,
             onBack = {},
             onEdit = {},
+            onDelete = {},
+            onSubmitReport = {},
+            onBackToHome = {}
+        )
+    }
+}
+
+@Preview(
+    name = "Submitted Editable Report",
+    showBackground = true
+)
+@Composable
+private fun SubmittedEditableReportPreview() {
+    MaterialTheme {
+        ReviewReportScreen(
+            category = "Broken Streetlight",
+            description = "Streetlight is not working at night.",
+            location = "Brgy. Mapua, Laguna",
+            photoAdded = true,
+            submitted = true,
+            status = "Submitted",
+            inspectionNotes = "",
+            completionNotes = "",
+            canModify = true,
+            onBack = {},
+            onEdit = {},
+            onDelete = {},
+            onSubmitReport = {},
+            onBackToHome = {}
+        )
+    }
+}
+
+@Preview(
+    name = "Needs Repair Locked Report",
+    showBackground = true
+)
+@Composable
+private fun NeedsRepairReportPreview() {
+    MaterialTheme {
+        ReviewReportScreen(
+            category = "Broken Streetlight",
+            description = "Streetlight is not working at night.",
+            location = "Brgy. Mapua, Laguna",
+            photoAdded = true,
+            submitted = true,
+            status = "Needs Repair",
+            inspectionNotes = "The wiring is damaged and requires replacement.",
+            completionNotes = "",
+            canModify = false,
+            onBack = {},
+            onEdit = {},
+            onDelete = {},
+            onSubmitReport = {},
+            onBackToHome = {}
+        )
+    }
+}
+
+@Preview(
+    name = "Resolved Locked Report",
+    showBackground = true
+)
+@Composable
+private fun ResolvedReportPreview() {
+    MaterialTheme {
+        ReviewReportScreen(
+            category = "Broken Streetlight",
+            description = "Streetlight is not working at night.",
+            location = "Brgy. Mapua, Laguna",
+            photoAdded = true,
+            submitted = true,
+            status = "Resolved",
+            inspectionNotes = "The wiring is damaged and requires replacement.",
+            completionNotes = "Streetlight wiring replaced and tested.",
+            canModify = false,
+            onBack = {},
+            onEdit = {},
+            onDelete = {},
             onSubmitReport = {},
             onBackToHome = {}
         )

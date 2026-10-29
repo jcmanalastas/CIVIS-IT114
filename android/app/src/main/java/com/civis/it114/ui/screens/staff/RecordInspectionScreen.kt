@@ -30,6 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+private val staffMembers = listOf(
+    "Staff Member 1",
+    "Staff Member 2"
+)
+
 private val inspectionResults = listOf(
     "For Inspection",
     "Needs Repair",
@@ -52,6 +57,10 @@ fun RecordInspectionScreen(
     onBack: () -> Unit,
     onSaveInspection: () -> Unit
 ) {
+    var staffMenuExpanded by remember {
+        mutableStateOf(false)
+    }
+
     var resultMenuExpanded by remember {
         mutableStateOf(false)
     }
@@ -129,15 +138,51 @@ fun RecordInspectionScreen(
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        OutlinedTextField(
-            value = staffMember,
-            onValueChange = onStaffMemberChange,
-            placeholder = {
-                Text("Enter staff member")
-            },
-            singleLine = true,
+        Box(
             modifier = Modifier.fillMaxWidth()
-        )
+        ) {
+            OutlinedTextField(
+                value = staffMember,
+                onValueChange = {},
+                readOnly = true,
+                placeholder = {
+                    Text("Select Staff Member")
+                },
+                trailingIcon = {
+                    Text(
+                        text = "▼",
+                        modifier = Modifier.clickable {
+                            staffMenuExpanded = true
+                        }
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        staffMenuExpanded = true
+                    }
+            )
+
+            DropdownMenu(
+                expanded = staffMenuExpanded,
+                onDismissRequest = {
+                    staffMenuExpanded = false
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                staffMembers.forEach { staff ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(staff)
+                        },
+                        onClick = {
+                            onStaffMemberChange(staff)
+                            staffMenuExpanded = false
+                        }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
