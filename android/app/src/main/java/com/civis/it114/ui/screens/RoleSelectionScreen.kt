@@ -55,7 +55,7 @@ fun RoleSelectionScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Community Issue Reporting System",
+            text = "Your trusted community service application",
             style = MaterialTheme.typography.bodyMedium
         )
 

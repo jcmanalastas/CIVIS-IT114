@@ -19,14 +19,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -40,13 +35,11 @@ fun StaffHomeScreen(
     category: String,
     location: String,
     caseStatus: String,
+    hasCases: Boolean,
     onViewCase: () -> Unit,
+    onViewAllCases: () -> Unit,
     onBack: () -> Unit
 ) {
-    var bottomBarMessage by remember {
-        mutableStateOf("")
-    }
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -119,50 +112,46 @@ fun StaffHomeScreen(
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            Text(
-                text = "Recent Cases",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Recent Cases",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                if (hasCases) {
+                    TextButton(
+                        onClick = onViewAllCases
+                    ) {
+                        Text("View All")
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            RecentCaseCard(
-                caseId = caseId,
-                category = category,
-                location = location,
-                status = caseStatus,
-                onViewCase = onViewCase
-            )
+            if (hasCases) {
+                RecentCaseCard(
+                    caseId = caseId,
+                    category = category,
+                    location = location,
+                    status = caseStatus,
+                    onViewCase = onViewCase
+                )
+            } else {
+                EmptyRecentCases()
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
 
-        if (bottomBarMessage.isNotBlank()) {
-            Text(
-                text = bottomBarMessage,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 8.dp
-                    ),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-        }
-
         StaffBottomBar(
-            onHome = {
-                bottomBarMessage = "You're already on Home"
-            },
-            onCases = {
-                bottomBarMessage = "Cases function in progress"
-            },
-            onProfile = {
-                bottomBarMessage = "Profile function in progress"
-            }
+            onHome = {},
+            onCases = onViewAllCases
         )
     }
 }
@@ -306,10 +295,37 @@ private fun RecentCaseCard(
 }
 
 @Composable
+private fun EmptyRecentCases() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = RoundedCornerShape(10.dp)
+            )
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "No Cases Yet",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = "Submitted community cases will appear here.",
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Composable
 private fun StaffBottomBar(
     onHome: () -> Unit,
-    onCases: () -> Unit,
-    onProfile: () -> Unit
+    onCases: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -346,82 +362,52 @@ private fun StaffBottomBar(
                 Text("Cases")
             }
         }
-
-        TextButton(
-            onClick = onProfile,
-            modifier = Modifier.weight(1f)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("○")
-                Text("Profile")
-            }
-        }
     }
 }
 
 @Preview(
-    name = "Staff Home Pending",
+    name = "Staff Home With Cases",
     showBackground = true
 )
 @Composable
-private fun StaffHomePendingPreview() {
+private fun StaffHomeWithCasesPreview() {
     MaterialTheme {
         StaffHomeScreen(
-            pendingCount = 5,
-            underReviewCount = 3,
-            inProgressCount = 4,
-            resolvedCount = 2,
-            caseId = "CIV-0001",
+            pendingCount = 1,
+            underReviewCount = 1,
+            inProgressCount = 1,
+            resolvedCount = 1,
+            caseId = "CIV-0002",
             category = "Broken Streetlight",
             location = "Brgy. Mapua, Laguna",
-            caseStatus = "Pending",
+            caseStatus = "Submitted",
+            hasCases = true,
             onViewCase = {},
+            onViewAllCases = {},
             onBack = {}
         )
     }
 }
 
 @Preview(
-    name = "Staff Home Assigned",
+    name = "Staff Home Empty",
     showBackground = true
 )
 @Composable
-private fun StaffHomeAssignedPreview() {
+private fun StaffHomeEmptyPreview() {
     MaterialTheme {
         StaffHomeScreen(
-            pendingCount = 5,
-            underReviewCount = 3,
-            inProgressCount = 4,
-            resolvedCount = 2,
-            caseId = "CIV-0001",
-            category = "Broken Streetlight",
-            location = "Brgy. Mapua, Laguna",
-            caseStatus = "Assigned",
+            pendingCount = 0,
+            underReviewCount = 0,
+            inProgressCount = 0,
+            resolvedCount = 0,
+            caseId = "",
+            category = "",
+            location = "",
+            caseStatus = "",
+            hasCases = false,
             onViewCase = {},
-            onBack = {}
-        )
-    }
-}
-
-@Preview(
-    name = "Staff Home Resolved",
-    showBackground = true
-)
-@Composable
-private fun StaffHomeResolvedPreview() {
-    MaterialTheme {
-        StaffHomeScreen(
-            pendingCount = 5,
-            underReviewCount = 3,
-            inProgressCount = 4,
-            resolvedCount = 2,
-            caseId = "CIV-0001",
-            category = "Broken Streetlight",
-            location = "Brgy. Mapua, Laguna",
-            caseStatus = "Resolved",
-            onViewCase = {},
+            onViewAllCases = {},
             onBack = {}
         )
     }

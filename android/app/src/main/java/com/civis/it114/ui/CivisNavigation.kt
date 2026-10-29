@@ -1,6 +1,7 @@
 package com.civis.it114.ui
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -8,28 +9,45 @@ import com.civis.it114.ui.screens.RoleSelectionScreen
 import com.civis.it114.ui.screens.resident.CaseStatusScreen
 import com.civis.it114.ui.screens.resident.ReportIssueScreen
 import com.civis.it114.ui.screens.resident.ResidentHomeScreen
+import com.civis.it114.ui.screens.resident.ResidentReportsScreen
 import com.civis.it114.ui.screens.resident.ReviewReportScreen
 import com.civis.it114.ui.screens.resident.SubmitConfirmationScreen
 import com.civis.it114.ui.screens.staff.CaseDetailsScreen
 import com.civis.it114.ui.screens.staff.CaseUpdateScreen
 import com.civis.it114.ui.screens.staff.RecordInspectionScreen
+import com.civis.it114.ui.screens.staff.StaffCasesScreen
 import com.civis.it114.ui.screens.staff.StaffConfirmationScreen
 import com.civis.it114.ui.screens.staff.StaffHomeScreen
 
 object CivisRoutes {
     const val RoleSelection = "role_selection"
     const val ResidentHome = "resident_home"
+    const val ResidentReports = "resident_reports"
     const val ReportIssue = "report_issue"
     const val ReviewReport = "review_report"
     const val ViewReport = "view_report"
+    const val EditReport = "edit_report"
+    const val ReviewEditReport = "review_edit_report"
     const val SubmitConfirmation = "submit_confirmation"
     const val CaseStatus = "case_status"
     const val StaffHome = "staff_home"
+    const val StaffCases = "staff_cases"
     const val CaseDetails = "case_details"
     const val AssignmentConfirmation = "assignment_confirmation"
+    const val AssignmentUpdateConfirmation = "assignment_update_confirmation"
     const val RecordInspection = "record_inspection"
     const val InspectionConfirmation = "inspection_confirmation"
     const val CaseUpdate = "case_update"
+}
+
+private fun navigateFrom(
+    navController: NavHostController,
+    sourceRoute: String,
+    destinationRoute: String
+) {
+    if (navController.currentDestination?.route == sourceRoute) {
+        navController.navigate(destinationRoute)
+    }
 }
 
 @Composable
@@ -45,36 +63,105 @@ fun CivisNavigation(
         composable(CivisRoutes.RoleSelection) {
             RoleSelectionScreen(
                 onViewAsResident = {
-                    navController.navigate(CivisRoutes.ResidentHome)
+                    navigateFrom(
+                        navController,
+                        CivisRoutes.RoleSelection,
+                        CivisRoutes.ResidentHome
+                    )
                 },
                 onViewAsStaff = {
-                    navController.navigate(CivisRoutes.StaffHome)
+                    navigateFrom(
+                        navController,
+                        CivisRoutes.RoleSelection,
+                        CivisRoutes.StaffHome
+                    )
                 }
             )
         }
 
         composable(CivisRoutes.ResidentHome) {
             ResidentHomeScreen(
-                hasReport = appState.hasReport,
-                caseId = appState.caseId,
-                category = appState.reportCategory,
-                location = appState.reportLocation,
-                status = appState.caseStatus,
+                cases = appState.cases,
                 onReportIssue = {
-                    navController.navigate(CivisRoutes.ReportIssue)
-                },
-                onTrackReports = {
-                    if (appState.hasReport) {
-                        navController.navigate(CivisRoutes.CaseStatus)
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ResidentHome
+                    ) {
+                        appState.clearReportDraft()
+
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.ResidentHome,
+                            CivisRoutes.ReportIssue
+                        )
                     }
                 },
-                onViewReport = {
-                    if (appState.hasReport) {
-                        navController.navigate(CivisRoutes.ViewReport)
+                onTrackReports = {
+                    navigateFrom(
+                        navController,
+                        CivisRoutes.ResidentHome,
+                        CivisRoutes.ResidentReports
+                    )
+                },
+                onViewReport = { caseId ->
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ResidentHome
+                    ) {
+                        appState.selectCase(caseId)
+
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.ResidentHome,
+                            CivisRoutes.ViewReport
+                        )
                     }
                 },
                 onBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable(CivisRoutes.ResidentReports) {
+            ResidentReportsScreen(
+                cases = appState.cases,
+                onTrackReport = { caseId ->
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ResidentReports
+                    ) {
+                        appState.selectCase(caseId)
+
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.ResidentReports,
+                            CivisRoutes.CaseStatus
+                        )
+                    }
+                },
+                onViewReport = { caseId ->
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ResidentReports
+                    ) {
+                        appState.selectCase(caseId)
+
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.ResidentReports,
+                            CivisRoutes.ViewReport
+                        )
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+                onHome = {
+                    navController.popBackStack(
+                        CivisRoutes.ResidentHome,
+                        false
+                    )
                 }
             )
         }
@@ -98,7 +185,11 @@ fun CivisNavigation(
                     appState.reportPhotoAdded = it
                 },
                 onContinue = {
-                    navController.navigate(CivisRoutes.ReviewReport)
+                    navigateFrom(
+                        navController,
+                        CivisRoutes.ReportIssue,
+                        CivisRoutes.ReviewReport
+                    )
                 },
                 onCancel = {
                     appState.clearReportDraft()
@@ -114,6 +205,10 @@ fun CivisNavigation(
                 location = appState.reportLocation,
                 photoAdded = appState.reportPhotoAdded,
                 submitted = false,
+                status = "",
+                inspectionNotes = "",
+                completionNotes = "",
+                canModify = false,
                 onBack = {
                     navController.popBackStack(
                         CivisRoutes.ReportIssue,
@@ -123,8 +218,11 @@ fun CivisNavigation(
                 onEdit = {
                     navController.popBackStack()
                 },
+                onDelete = {},
                 onSubmitReport = {
-                    navController.navigate(
+                    navigateFrom(
+                        navController,
+                        CivisRoutes.ReviewReport,
                         CivisRoutes.SubmitConfirmation
                     )
                 },
@@ -133,16 +231,50 @@ fun CivisNavigation(
         }
 
         composable(CivisRoutes.ViewReport) {
+            val currentCase = appState.currentCase
+
             ReviewReportScreen(
-                category = appState.reportCategory,
-                description = appState.reportDescription,
-                location = appState.reportLocation,
-                photoAdded = appState.reportPhotoAdded,
+                category = currentCase?.category ?: "",
+                description = currentCase?.description ?: "",
+                location = currentCase?.location ?: "",
+                photoAdded = currentCase?.photoAdded ?: false,
                 submitted = true,
+                status = currentCase?.status ?: "",
+                inspectionNotes = currentCase?.inspectionNotes ?: "",
+                completionNotes = currentCase?.completionNotes ?: "",
+                canModify = appState.canResidentModifyCurrentCase,
                 onBack = {
                     navController.popBackStack()
                 },
-                onEdit = {},
+                onEdit = {
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ViewReport &&
+                        appState.canResidentModifyCurrentCase
+                    ) {
+                        appState.prepareReportEdit()
+
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.ViewReport,
+                            CivisRoutes.EditReport
+                        )
+                    }
+                },
+                onDelete = {
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ViewReport &&
+                        appState.canResidentModifyCurrentCase
+                    ) {
+                        appState.deleteCurrentCase()
+
+                        navController.popBackStack(
+                            CivisRoutes.ResidentHome,
+                            false
+                        )
+                    }
+                },
                 onSubmitReport = {},
                 onBackToHome = {
                     navController.popBackStack(
@@ -153,32 +285,118 @@ fun CivisNavigation(
             )
         }
 
+        composable(CivisRoutes.EditReport) {
+            ReportIssueScreen(
+                selectedCategory = appState.reportCategory,
+                description = appState.reportDescription,
+                location = appState.reportLocation,
+                photoAdded = appState.reportPhotoAdded,
+                onCategoryChange = {
+                    appState.reportCategory = it
+                },
+                onDescriptionChange = {
+                    appState.reportDescription = it
+                },
+                onLocationChange = {
+                    appState.reportLocation = it
+                },
+                onPhotoChange = {
+                    appState.reportPhotoAdded = it
+                },
+                onContinue = {
+                    navigateFrom(
+                        navController,
+                        CivisRoutes.EditReport,
+                        CivisRoutes.ReviewEditReport
+                    )
+                },
+                onCancel = {
+                    appState.clearReportDraft()
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(CivisRoutes.ReviewEditReport) {
+            ReviewReportScreen(
+                category = appState.reportCategory,
+                description = appState.reportDescription,
+                location = appState.reportLocation,
+                photoAdded = appState.reportPhotoAdded,
+                submitted = false,
+                status = "",
+                inspectionNotes = "",
+                completionNotes = "",
+                canModify = false,
+                onBack = {
+                    navController.popBackStack(
+                        CivisRoutes.EditReport,
+                        false
+                    )
+                },
+                onEdit = {
+                    navController.popBackStack()
+                },
+                onDelete = {},
+                onSubmitReport = {
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ReviewEditReport &&
+                        appState.canResidentModifyCurrentCase
+                    ) {
+                        appState.saveReportEdit()
+
+                        navController.popBackStack(
+                            CivisRoutes.ResidentHome,
+                            false
+                        )
+                    }
+                },
+                onBackToHome = {}
+            )
+        }
+
         composable(CivisRoutes.SubmitConfirmation) {
             SubmitConfirmationScreen(
                 onCancel = {
                     navController.popBackStack()
                 },
                 onSubmit = {
-                    appState.submitReport()
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.SubmitConfirmation
+                    ) {
+                        appState.submitReport()
 
-                    navController.popBackStack(
-                        CivisRoutes.ResidentHome,
-                        false
-                    )
+                        navController.popBackStack(
+                            CivisRoutes.ResidentHome,
+                            false
+                        )
 
-                    navController.navigate(
-                        CivisRoutes.CaseStatus
-                    )
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.ResidentHome,
+                            CivisRoutes.CaseStatus
+                        )
+                    }
                 }
             )
         }
 
         composable(CivisRoutes.CaseStatus) {
+            val currentCase = appState.currentCase
+
             CaseStatusScreen(
-                caseId = appState.caseId,
-                status = appState.caseStatus,
+                caseId = currentCase?.id ?: "",
+                status = currentCase?.status ?: "",
                 onViewCase = {
-                    navController.navigate(CivisRoutes.ViewReport)
+                    if (currentCase != null) {
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.CaseStatus,
+                            CivisRoutes.ViewReport
+                        )
+                    }
                 },
                 onBackToHome = {
                     navController.popBackStack(
@@ -190,25 +408,58 @@ fun CivisNavigation(
         }
 
         composable(CivisRoutes.StaffHome) {
+            val latestCase = appState.latestCase
+
+            val pendingCount = appState.cases.count {
+                it.status == "Submitted" ||
+                    it.status == "Pending"
+            }
+
+            val underReviewCount = appState.cases.count {
+                it.status == "Assigned" ||
+                    it.status == "For Inspection"
+            }
+
+            val inProgressCount = appState.cases.count {
+                it.status == "Needs Repair" ||
+                    it.status == "In Progress"
+            }
+
+            val resolvedCount = appState.cases.count {
+                it.status == "Resolved"
+            }
+
             StaffHomeScreen(
-                pendingCount = 5,
-                underReviewCount = 3,
-                inProgressCount = 4,
-                resolvedCount = 2,
-                caseId = appState.caseId.ifBlank {
-                    "CIV-0001"
-                },
-                category = appState.reportCategory.ifBlank {
-                    "Broken Streetlight"
-                },
-                location = appState.reportLocation.ifBlank {
-                    "Brgy. Mapag, Laguna"
-                },
-                caseStatus = appState.caseStatus.ifBlank {
-                    "Pending"
-                },
+                pendingCount = pendingCount,
+                underReviewCount = underReviewCount,
+                inProgressCount = inProgressCount,
+                resolvedCount = resolvedCount,
+                caseId = latestCase?.id ?: "",
+                category = latestCase?.category ?: "",
+                location = latestCase?.location ?: "",
+                caseStatus = latestCase?.status ?: "",
+                hasCases = appState.cases.isNotEmpty(),
                 onViewCase = {
-                    navController.navigate(CivisRoutes.CaseDetails)
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.StaffHome &&
+                        latestCase != null
+                    ) {
+                        appState.selectCase(latestCase.id)
+
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.StaffHome,
+                            CivisRoutes.CaseDetails
+                        )
+                    }
+                },
+                onViewAllCases = {
+                    navigateFrom(
+                        navController,
+                        CivisRoutes.StaffHome,
+                        CivisRoutes.StaffCases
+                    )
                 },
                 onBack = {
                     navController.popBackStack()
@@ -216,26 +467,48 @@ fun CivisNavigation(
             )
         }
 
+        composable(CivisRoutes.StaffCases) {
+            StaffCasesScreen(
+                cases = appState.cases,
+                onViewCase = { caseId ->
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.StaffCases
+                    ) {
+                        appState.selectCase(caseId)
+
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.StaffCases,
+                            CivisRoutes.CaseDetails
+                        )
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+                onHome = {
+                    navController.popBackStack(
+                        CivisRoutes.StaffHome,
+                        false
+                    )
+                }
+            )
+        }
+
         composable(CivisRoutes.CaseDetails) {
+            val currentCase = appState.currentCase
+
             CaseDetailsScreen(
-                caseId = appState.caseId.ifBlank {
-                    "CIV-0001"
-                },
-                category = appState.reportCategory.ifBlank {
-                    "Broken Streetlight"
-                },
-                date = appState.caseDate,
-                status = appState.caseStatus.ifBlank {
-                    "Pending"
-                },
-                description = appState.reportDescription.ifBlank {
-                    "Streetlight is not working at night."
-                },
-                location = appState.reportLocation.ifBlank {
-                    "Brgy. Mapag, Laguna"
-                },
+                caseId = currentCase?.id ?: "",
+                category = currentCase?.category ?: "",
+                date = currentCase?.date ?: "",
+                status = currentCase?.status ?: "",
+                description = currentCase?.description ?: "",
+                location = currentCase?.location ?: "",
                 priority = appState.priority,
                 assignedStaff = appState.assignedStaff,
+                completionNotes = currentCase?.completionNotes ?: "",
                 onPriorityChange = {
                     appState.priority = it
                 },
@@ -243,46 +516,99 @@ fun CivisNavigation(
                     appState.assignedStaff = it
                 },
                 onBack = {
-                    navController.popBackStack(
-                        CivisRoutes.StaffHome,
-                        false
-                    )
+                    navController.popBackStack()
                 },
                 onAssignCase = {
-                    appState.assignCase()
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.CaseDetails
+                    ) {
+                        appState.assignCase()
 
-                    navController.popBackStack(
-                        CivisRoutes.StaffHome,
-                        false
-                    )
+                        navController.popBackStack(
+                            CivisRoutes.StaffHome,
+                            false
+                        )
 
-                    navController.navigate(
-                        CivisRoutes.AssignmentConfirmation
-                    )
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.StaffHome,
+                            CivisRoutes.AssignmentConfirmation
+                        )
+                    }
+                },
+                onUpdateAssignment = {
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.CaseDetails
+                    ) {
+                        appState.assignCase()
+
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.CaseDetails,
+                            CivisRoutes.AssignmentUpdateConfirmation
+                        )
+                    }
                 },
                 onRecordInspection = {
-                    navController.navigate(
+                    navigateFrom(
+                        navController,
+                        CivisRoutes.CaseDetails,
                         CivisRoutes.RecordInspection
                     )
                 },
                 onUpdateCase = {
-                    appState.prepareCaseUpdate()
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.CaseDetails
+                    ) {
+                        appState.prepareCaseUpdate()
 
-                    navController.navigate(
-                        CivisRoutes.CaseUpdate
-                    )
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.CaseDetails,
+                            CivisRoutes.CaseUpdate
+                        )
+                    }
+                },
+                onReopenCase = {
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.CaseDetails &&
+                        currentCase?.status == "Resolved"
+                    ) {
+                        appState.reopenCase()
+                    }
                 }
             )
         }
 
         composable(CivisRoutes.AssignmentConfirmation) {
+            val currentCase = appState.currentCase
+
             StaffConfirmationScreen(
                 title = "Case Assigned",
                 message = "The case has been assigned successfully.",
-                caseId = appState.caseId.ifBlank {
-                    "CIV-0001"
-                },
-                status = appState.caseStatus,
+                caseId = currentCase?.id ?: "",
+                status = currentCase?.status ?: "",
+                onBackToHome = {
+                    navController.popBackStack(
+                        CivisRoutes.StaffHome,
+                        false
+                    )
+                }
+            )
+        }
+
+        composable(CivisRoutes.AssignmentUpdateConfirmation) {
+            val currentCase = appState.currentCase
+
+            StaffConfirmationScreen(
+                title = "Case Updated",
+                message = "The case assignment has been updated successfully.",
+                caseId = currentCase?.id ?: "",
+                status = currentCase?.status ?: "",
                 onBackToHome = {
                     navController.popBackStack(
                         CivisRoutes.StaffHome,
@@ -293,10 +619,10 @@ fun CivisNavigation(
         }
 
         composable(CivisRoutes.RecordInspection) {
+            val currentCase = appState.currentCase
+
             RecordInspectionScreen(
-                caseId = appState.caseId.ifBlank {
-                    "CIV-0001"
-                },
+                caseId = currentCase?.id ?: "",
                 inspectionDate = appState.inspectionDate,
                 staffMember = appState.inspectionStaffMember,
                 findings = appState.inspectionFindings,
@@ -321,28 +647,35 @@ fun CivisNavigation(
                     navController.popBackStack()
                 },
                 onSaveInspection = {
-                    appState.saveInspection()
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.RecordInspection
+                    ) {
+                        appState.saveInspection()
 
-                    navController.popBackStack(
-                        CivisRoutes.StaffHome,
-                        false
-                    )
+                        navController.popBackStack(
+                            CivisRoutes.StaffHome,
+                            false
+                        )
 
-                    navController.navigate(
-                        CivisRoutes.InspectionConfirmation
-                    )
+                        navigateFrom(
+                            navController,
+                            CivisRoutes.StaffHome,
+                            CivisRoutes.InspectionConfirmation
+                        )
+                    }
                 }
             )
         }
 
         composable(CivisRoutes.InspectionConfirmation) {
+            val currentCase = appState.currentCase
+
             StaffConfirmationScreen(
                 title = "Inspection Record Saved",
                 message = "The inspection record has been saved successfully.",
-                caseId = appState.caseId.ifBlank {
-                    "CIV-0001"
-                },
-                status = appState.caseStatus,
+                caseId = currentCase?.id ?: "",
+                status = currentCase?.status ?: "",
                 onBackToHome = {
                     navController.popBackStack(
                         CivisRoutes.StaffHome,
@@ -353,14 +686,12 @@ fun CivisNavigation(
         }
 
         composable(CivisRoutes.CaseUpdate) {
+            val currentCase = appState.currentCase
+
             CaseUpdateScreen(
-                caseId = appState.caseId.ifBlank {
-                    "CIV-0001"
-                },
-                category = appState.reportCategory.ifBlank {
-                    "Broken Streetlight"
-                },
-                currentStatus = appState.caseStatus,
+                caseId = currentCase?.id ?: "",
+                category = currentCase?.category ?: "",
+                currentStatus = currentCase?.status ?: "",
                 selectedStatus = appState.selectedUpdateStatus,
                 completionNotes = appState.completionNotes,
                 onStatusChange = {
@@ -373,12 +704,17 @@ fun CivisNavigation(
                     navController.popBackStack()
                 },
                 onSaveUpdate = {
-                    appState.saveCaseUpdate()
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.CaseUpdate
+                    ) {
+                        appState.saveCaseUpdate()
 
-                    navController.popBackStack(
-                        CivisRoutes.StaffHome,
-                        false
-                    )
+                        navController.popBackStack(
+                            CivisRoutes.StaffHome,
+                            false
+                        )
+                    }
                 }
             )
         }
