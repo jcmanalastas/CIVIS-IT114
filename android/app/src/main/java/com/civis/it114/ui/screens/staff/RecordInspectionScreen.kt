@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun RecordInspectionScreen(
@@ -57,10 +62,17 @@ fun RecordInspectionScreen(
         mutableStateOf(false)
     }
 
+    var showDateDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var selectedDate by remember {
+        mutableStateOf(Calendar.getInstance())
+    }
+
     val staffMembers = listOf(
         "Staff Member 1",
-        "Staff Member 2",
-        "Staff Member 3"
+        "Staff Member 2"
     )
 
     val results = listOf(
@@ -68,6 +80,118 @@ fun RecordInspectionScreen(
         "In Progress",
         "Resolved"
     )
+
+    if (showDateDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDateDialog = false
+            },
+            title = {
+                Text("Select Inspection Date")
+            },
+            text = {
+                Column {
+                    Text(
+                        text = SimpleDateFormat(
+                            "MMMM d, yyyy",
+                            Locale.getDefault()
+                        ).format(selectedDate.time),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text("Month")
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TextButton(
+                            onClick = {
+                                selectedDate =
+                                    (selectedDate.clone() as Calendar).apply {
+                                        add(Calendar.MONTH, -1)
+                                    }
+                            }
+                        ) {
+                            Text("Previous")
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        TextButton(
+                            onClick = {
+                                selectedDate =
+                                    (selectedDate.clone() as Calendar).apply {
+                                        add(Calendar.MONTH, 1)
+                                    }
+                            }
+                        ) {
+                            Text("Next")
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text("Day")
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TextButton(
+                            onClick = {
+                                selectedDate =
+                                    (selectedDate.clone() as Calendar).apply {
+                                        add(Calendar.DAY_OF_MONTH, -1)
+                                    }
+                            }
+                        ) {
+                            Text("Previous")
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        TextButton(
+                            onClick = {
+                                selectedDate =
+                                    (selectedDate.clone() as Calendar).apply {
+                                        add(Calendar.DAY_OF_MONTH, 1)
+                                    }
+                            }
+                        ) {
+                            Text("Next")
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val formattedDate =
+                            SimpleDateFormat(
+                                "MMMM d, yyyy",
+                                Locale.getDefault()
+                            ).format(selectedDate.time)
+
+                        onInspectionDateChange(formattedDate)
+                        showDateDialog = false
+                    }
+                ) {
+                    Text("Select")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDateDialog = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -118,18 +242,35 @@ fun RecordInspectionScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        OutlinedTextField(
-            value = inspectionDate,
-            onValueChange = onInspectionDateChange,
-            label = {
-                Text("Inspection Date")
-            },
-            placeholder = {
-                Text("Enter inspection date")
-            },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    showDateDialog = true
+                }
+        ) {
+            OutlinedTextField(
+                value = inspectionDate,
+                onValueChange = {},
+                readOnly = true,
+                label = {
+                    Text("Inspection Date")
+                },
+                placeholder = {
+                    Text("Select inspection date")
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            showDateDialog = true
+                        }
+                    ) {
+                        Text("📅")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -169,7 +310,8 @@ fun RecordInspectionScreen(
                 expanded = staffMenuExpanded,
                 onDismissRequest = {
                     staffMenuExpanded = false
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             ) {
                 staffMembers.forEach { member ->
                     DropdownMenuItem(
@@ -253,7 +395,8 @@ fun RecordInspectionScreen(
                 expanded = resultMenuExpanded,
                 onDismissRequest = {
                     resultMenuExpanded = false
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             ) {
                 results.forEach { inspectionResult ->
                     DropdownMenuItem(
@@ -297,7 +440,7 @@ private fun RecordInspectionScreenPreview() {
     MaterialTheme {
         RecordInspectionScreen(
             caseId = "CIV-0001",
-            inspectionDate = "Sept. 14, 2026",
+            inspectionDate = "November 3, 2026",
             onInspectionDateChange = {},
             staffMember = "Staff Member 1",
             onStaffMemberChange = {},
