@@ -35,21 +35,7 @@ class CivisAppState(
     reportLocationState: MutableState<String>,
     reportPhotoAddedState: MutableState<Boolean>,
     nextCaseNumberState: MutableState<Int>,
-    caseIdsState: MutableState<List<String>>,
-    caseCategoriesState: MutableState<List<String>>,
-    caseDescriptionsState: MutableState<List<String>>,
-    caseLocationsState: MutableState<List<String>>,
-    casePhotoAddedState: MutableState<List<Boolean>>,
-    caseDatesState: MutableState<List<String>>,
-    caseStatusesState: MutableState<List<String>>,
-    casePrioritiesState: MutableState<List<String>>,
-    caseAssignedStaffState: MutableState<List<String>>,
-    caseInspectionDatesState: MutableState<List<String>>,
-    caseInspectionStaffMembersState: MutableState<List<String>>,
-    caseInspectionFindingsState: MutableState<List<String>>,
-    caseInspectionNotesState: MutableState<List<String>>,
-    caseInspectionResultsState: MutableState<List<String>>,
-    caseCompletionNotesState: MutableState<List<String>>,
+    caseRecordsState: MutableState<List<List<String>>>,
     caseIdState: MutableState<String>,
     caseStatusState: MutableState<String>,
     priorityState: MutableState<String>,
@@ -68,22 +54,7 @@ class CivisAppState(
     var reportPhotoAdded by reportPhotoAddedState
 
     var nextCaseNumber by nextCaseNumberState
-
-    var caseIds by caseIdsState
-    var caseCategories by caseCategoriesState
-    var caseDescriptions by caseDescriptionsState
-    var caseLocations by caseLocationsState
-    var casePhotoAdded by casePhotoAddedState
-    var caseDates by caseDatesState
-    var caseStatuses by caseStatusesState
-    var casePriorities by casePrioritiesState
-    var caseAssignedStaff by caseAssignedStaffState
-    var caseInspectionDates by caseInspectionDatesState
-    var caseInspectionStaffMembers by caseInspectionStaffMembersState
-    var caseInspectionFindings by caseInspectionFindingsState
-    var caseInspectionNotes by caseInspectionNotesState
-    var caseInspectionResults by caseInspectionResultsState
-    var caseCompletionNotes by caseCompletionNotesState
+    var caseRecords by caseRecordsState
 
     var caseId by caseIdState
     var caseStatus by caseStatusState
@@ -100,27 +71,47 @@ class CivisAppState(
     var selectedUpdateStatus by selectedUpdateStatusState
     var completionNotes by completionNotesState
 
+    private val idIndex = 0
+    private val categoryIndex = 1
+    private val descriptionIndex = 2
+    private val locationIndex = 3
+    private val photoAddedIndex = 4
+    private val dateIndex = 5
+    private val statusIndex = 6
+    private val priorityIndex = 7
+    private val assignedStaffIndex = 8
+    private val inspectionDateIndex = 9
+    private val inspectionStaffMemberIndex = 10
+    private val inspectionFindingsIndex = 11
+    private val inspectionNotesIndex = 12
+    private val inspectionResultIndex = 13
+    private val completionNotesIndex = 14
+
+    private fun recordToCase(
+        record: List<String>
+    ): CivisCase {
+        return CivisCase(
+            id = record[idIndex],
+            category = record[categoryIndex],
+            description = record[descriptionIndex],
+            location = record[locationIndex],
+            photoAdded = record[photoAddedIndex].toBoolean(),
+            date = record[dateIndex],
+            status = record[statusIndex],
+            priority = record[priorityIndex],
+            assignedStaff = record[assignedStaffIndex],
+            inspectionDate = record[inspectionDateIndex],
+            inspectionStaffMember = record[inspectionStaffMemberIndex],
+            inspectionFindings = record[inspectionFindingsIndex],
+            inspectionNotes = record[inspectionNotesIndex],
+            inspectionResult = record[inspectionResultIndex],
+            completionNotes = record[completionNotesIndex]
+        )
+    }
+
     val cases: List<CivisCase>
-        get() {
-            return caseIds.indices.map { index ->
-                CivisCase(
-                    id = caseIds[index],
-                    category = caseCategories[index],
-                    description = caseDescriptions[index],
-                    location = caseLocations[index],
-                    photoAdded = casePhotoAdded[index],
-                    date = caseDates[index],
-                    status = caseStatuses[index],
-                    priority = casePriorities[index],
-                    assignedStaff = caseAssignedStaff[index],
-                    inspectionDate = caseInspectionDates[index],
-                    inspectionStaffMember = caseInspectionStaffMembers[index],
-                    inspectionFindings = caseInspectionFindings[index],
-                    inspectionNotes = caseInspectionNotes[index],
-                    inspectionResult = caseInspectionResults[index],
-                    completionNotes = caseCompletionNotes[index]
-                )
-            }
+        get() = caseRecords.map { record ->
+            recordToCase(record)
         }
 
     val currentCase: CivisCase?
@@ -155,21 +146,26 @@ class CivisAppState(
 
         nextCaseNumber += 1
 
-        caseIds = caseIds + newCaseId
-        caseCategories = caseCategories + reportCategory
-        caseDescriptions = caseDescriptions + reportDescription
-        caseLocations = caseLocations + reportLocation
-        casePhotoAdded = casePhotoAdded + reportPhotoAdded
-        caseDates = caseDates + currentDate
-        caseStatuses = caseStatuses + "Submitted"
-        casePriorities = casePriorities + "Medium"
-        caseAssignedStaff = caseAssignedStaff + ""
-        caseInspectionDates = caseInspectionDates + ""
-        caseInspectionStaffMembers = caseInspectionStaffMembers + ""
-        caseInspectionFindings = caseInspectionFindings + ""
-        caseInspectionNotes = caseInspectionNotes + ""
-        caseInspectionResults = caseInspectionResults + ""
-        caseCompletionNotes = caseCompletionNotes + ""
+        val newCaseRecord =
+            listOf(
+                newCaseId,
+                reportCategory,
+                reportDescription,
+                reportLocation,
+                reportPhotoAdded.toString(),
+                currentDate,
+                "Submitted",
+                "Medium",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            )
+
+        caseRecords = caseRecords + listOf(newCaseRecord)
 
         caseId = newCaseId
         caseStatus = "Submitted"
@@ -187,148 +183,83 @@ class CivisAppState(
     }
 
     fun selectCase(id: String) {
-        val index = caseIds.indexOf(id)
+        val selectedCase =
+            cases.firstOrNull {
+                it.id == id
+            }
 
-        if (index >= 0) {
-            caseId = caseIds[index]
-            caseStatus = caseStatuses[index]
-            priority = casePriorities[index]
-            assignedStaff = caseAssignedStaff[index]
-            inspectionDate = caseInspectionDates[index]
-            inspectionStaffMember = caseInspectionStaffMembers[index]
-            inspectionFindings = caseInspectionFindings[index]
-            inspectionNotes = caseInspectionNotes[index]
-            inspectionResult = caseInspectionResults[index]
-            completionNotes = caseCompletionNotes[index]
+        if (selectedCase != null) {
+            caseId = selectedCase.id
+            caseStatus = selectedCase.status
+            priority = selectedCase.priority
+            assignedStaff = selectedCase.assignedStaff
+            inspectionDate = selectedCase.inspectionDate
+            inspectionStaffMember =
+                selectedCase.inspectionStaffMember
+            inspectionFindings =
+                selectedCase.inspectionFindings
+            inspectionNotes =
+                selectedCase.inspectionNotes
+            inspectionResult =
+                selectedCase.inspectionResult
+            completionNotes =
+                selectedCase.completionNotes
         }
     }
 
     fun prepareReportEdit() {
-        val currentCase = currentCase
+        val selectedCase = currentCase
 
         if (
-            currentCase != null &&
+            selectedCase != null &&
             canResidentModifyCurrentCase
         ) {
-            reportCategory = currentCase.category
-            reportDescription = currentCase.description
-            reportLocation = currentCase.location
-            reportPhotoAdded = currentCase.photoAdded
+            reportCategory = selectedCase.category
+            reportDescription = selectedCase.description
+            reportLocation = selectedCase.location
+            reportPhotoAdded = selectedCase.photoAdded
         }
     }
 
     fun saveReportEdit() {
-        val index = caseIds.indexOf(caseId)
-
-        if (
-            index >= 0 &&
-            canResidentModifyCurrentCase
-        ) {
-            caseCategories =
-                caseCategories.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        reportCategory
-                    } else {
-                        value
-                    }
-                }
-
-            caseDescriptions =
-                caseDescriptions.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        reportDescription
-                    } else {
-                        value
-                    }
-                }
-
-            caseLocations =
-                caseLocations.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        reportLocation
-                    } else {
-                        value
-                    }
-                }
-
-            casePhotoAdded =
-                casePhotoAdded.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        reportPhotoAdded
-                    } else {
-                        value
-                    }
-                }
-
-            clearReportDraft()
+        if (!canResidentModifyCurrentCase) {
+            return
         }
+
+        caseRecords =
+            caseRecords.map { record ->
+                if (record[idIndex] == caseId) {
+                    record.mapIndexed { index, value ->
+                        when (index) {
+                            categoryIndex -> reportCategory
+                            descriptionIndex -> reportDescription
+                            locationIndex -> reportLocation
+                            photoAddedIndex -> reportPhotoAdded.toString()
+                            else -> value
+                        }
+                    }
+                } else {
+                    record
+                }
+            }
+
+        clearReportDraft()
     }
 
     fun deleteCurrentCase() {
-        val index = caseIds.indexOf(caseId)
+        if (!canResidentModifyCurrentCase) {
+            return
+        }
 
-        if (
-            index >= 0 &&
-            canResidentModifyCurrentCase
-        ) {
-            caseIds = caseIds.filterIndexed { itemIndex, _ ->
-                itemIndex != index
+        val caseExists =
+            caseRecords.any { record ->
+                record[idIndex] == caseId
             }
-            caseCategories =
-                caseCategories.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseDescriptions =
-                caseDescriptions.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseLocations =
-                caseLocations.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            casePhotoAdded =
-                casePhotoAdded.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseDates =
-                caseDates.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseStatuses =
-                caseStatuses.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            casePriorities =
-                casePriorities.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseAssignedStaff =
-                caseAssignedStaff.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseInspectionDates =
-                caseInspectionDates.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseInspectionStaffMembers =
-                caseInspectionStaffMembers.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseInspectionFindings =
-                caseInspectionFindings.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseInspectionNotes =
-                caseInspectionNotes.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseInspectionResults =
-                caseInspectionResults.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
-                }
-            caseCompletionNotes =
-                caseCompletionNotes.filterIndexed { itemIndex, _ ->
-                    itemIndex != index
+
+        if (caseExists) {
+            caseRecords =
+                caseRecords.filter { record ->
+                    record[idIndex] != caseId
                 }
 
             caseId = ""
@@ -346,94 +277,64 @@ class CivisAppState(
     }
 
     fun assignCase() {
-        val index = caseIds.indexOf(caseId)
+        val caseExists =
+            caseRecords.any { record ->
+                record[idIndex] == caseId
+            }
 
-        if (index >= 0) {
+        if (caseExists) {
             caseStatus = "Assigned"
 
-            caseStatuses = caseStatuses.mapIndexed { itemIndex, value ->
-                if (itemIndex == index) {
-                    caseStatus
-                } else {
-                    value
-                }
-            }
-
-            casePriorities = casePriorities.mapIndexed { itemIndex, value ->
-                if (itemIndex == index) {
-                    priority
-                } else {
-                    value
-                }
-            }
-
-            caseAssignedStaff =
-                caseAssignedStaff.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        assignedStaff
+            caseRecords =
+                caseRecords.map { record ->
+                    if (record[idIndex] == caseId) {
+                        record.mapIndexed { index, value ->
+                            when (index) {
+                                statusIndex -> caseStatus
+                                priorityIndex -> priority
+                                assignedStaffIndex -> assignedStaff
+                                else -> value
+                            }
+                        }
                     } else {
-                        value
+                        record
                     }
                 }
         }
     }
 
     fun saveInspection() {
-        val index = caseIds.indexOf(caseId)
-
-        if (index >= 0 && inspectionResult.isNotBlank()) {
-            caseStatus = inspectionResult
-
-            caseStatuses = caseStatuses.mapIndexed { itemIndex, value ->
-                if (itemIndex == index) {
-                    caseStatus
-                } else {
-                    value
-                }
+        val caseExists =
+            caseRecords.any { record ->
+                record[idIndex] == caseId
             }
 
-            caseInspectionDates =
-                caseInspectionDates.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        inspectionDate
-                    } else {
-                        value
-                    }
-                }
+        if (
+            caseExists &&
+            inspectionResult.isNotBlank()
+        ) {
+            caseStatus = inspectionResult
 
-            caseInspectionStaffMembers =
-                caseInspectionStaffMembers.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        inspectionStaffMember
+            caseRecords =
+                caseRecords.map { record ->
+                    if (record[idIndex] == caseId) {
+                        record.mapIndexed { index, value ->
+                            when (index) {
+                                statusIndex -> caseStatus
+                                inspectionDateIndex -> inspectionDate
+                                inspectionStaffMemberIndex ->
+                                    inspectionStaffMember
+                                inspectionFindingsIndex ->
+                                    inspectionFindings
+                                inspectionNotesIndex ->
+                                    inspectionNotes
+                                inspectionResultIndex ->
+                                    inspectionResult
+                                else -> value
+                            }
+                        }
                     } else {
-                        value
-                    }
-                }
-
-            caseInspectionFindings =
-                caseInspectionFindings.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        inspectionFindings
-                    } else {
-                        value
-                    }
-                }
-
-            caseInspectionNotes =
-                caseInspectionNotes.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        inspectionNotes
-                    } else {
-                        value
-                    }
-                }
-
-            caseInspectionResults =
-                caseInspectionResults.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        inspectionResult
-                    } else {
-                        value
+                        record
                     }
                 }
         }
@@ -441,155 +342,155 @@ class CivisAppState(
 
     fun prepareCaseUpdate() {
         selectedUpdateStatus = caseStatus
-        completionNotes = currentCase?.completionNotes ?: ""
+        completionNotes =
+            currentCase?.completionNotes ?: ""
     }
 
     fun saveCaseUpdate() {
-        val index = caseIds.indexOf(caseId)
-
-        if (index >= 0 && selectedUpdateStatus.isNotBlank()) {
-            caseStatus = selectedUpdateStatus
-
-            caseStatuses = caseStatuses.mapIndexed { itemIndex, value ->
-                if (itemIndex == index) {
-                    caseStatus
-                } else {
-                    value
-                }
+        val caseExists =
+            caseRecords.any { record ->
+                record[idIndex] == caseId
             }
 
-            caseCompletionNotes =
-                caseCompletionNotes.mapIndexed { itemIndex, value ->
-                    if (itemIndex == index) {
-                        completionNotes
+        if (
+            caseExists &&
+            selectedUpdateStatus.isNotBlank()
+        ) {
+            caseStatus = selectedUpdateStatus
+
+            caseRecords =
+                caseRecords.map { record ->
+                    if (record[idIndex] == caseId) {
+                        record.mapIndexed { index, value ->
+                            when (index) {
+                                statusIndex -> caseStatus
+                                completionNotesIndex ->
+                                    completionNotes
+                                else -> value
+                            }
+                        }
                     } else {
-                        value
+                        record
                     }
                 }
         }
     }
 
     fun reopenCase() {
-        val index = caseIds.indexOf(caseId)
+        val selectedCase = currentCase
 
         if (
-            index >= 0 &&
-            caseStatuses[index] == "Resolved"
+            selectedCase != null &&
+            selectedCase.status == "Resolved"
         ) {
             caseStatus = "In Progress"
 
-            caseStatuses = caseStatuses.mapIndexed { itemIndex, value ->
-                if (itemIndex == index) {
-                    caseStatus
-                } else {
-                    value
+            caseRecords =
+                caseRecords.map { record ->
+                    if (record[idIndex] == caseId) {
+                        record.mapIndexed { index, value ->
+                            if (index == statusIndex) {
+                                caseStatus
+                            } else {
+                                value
+                            }
+                        }
+                    } else {
+                        record
+                    }
                 }
-            }
         }
     }
 }
 
 @Composable
 fun rememberCivisAppState(): CivisAppState {
-    val reportCategoryState = rememberSaveable {
-        mutableStateOf("")
-    }
-    val reportDescriptionState = rememberSaveable {
-        mutableStateOf("")
-    }
-    val reportLocationState = rememberSaveable {
-        mutableStateOf("")
-    }
-    val reportPhotoAddedState = rememberSaveable {
-        mutableStateOf(false)
-    }
+    val reportCategoryState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
 
-    val nextCaseNumberState = rememberSaveable {
-        mutableStateOf(1)
-    }
+    val reportDescriptionState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
 
-    val caseIdsState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseCategoriesState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseDescriptionsState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseLocationsState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val casePhotoAddedState = rememberSaveable {
-        mutableStateOf(emptyList<Boolean>())
-    }
-    val caseDatesState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseStatusesState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val casePrioritiesState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseAssignedStaffState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseInspectionDatesState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseInspectionStaffMembersState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseInspectionFindingsState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseInspectionNotesState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseInspectionResultsState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
-    val caseCompletionNotesState = rememberSaveable {
-        mutableStateOf(emptyList<String>())
-    }
+    val reportLocationState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
 
-    val caseIdState = rememberSaveable {
-        mutableStateOf("")
-    }
-    val caseStatusState = rememberSaveable {
-        mutableStateOf("")
-    }
+    val reportPhotoAddedState =
+        rememberSaveable {
+            mutableStateOf(false)
+        }
 
-    val priorityState = rememberSaveable {
-        mutableStateOf("Medium")
-    }
-    val assignedStaffState = rememberSaveable {
-        mutableStateOf("")
-    }
+    val nextCaseNumberState =
+        rememberSaveable {
+            mutableStateOf(1)
+        }
 
-    val inspectionDateState = rememberSaveable {
-        mutableStateOf("")
-    }
-    val inspectionStaffMemberState = rememberSaveable {
-        mutableStateOf("")
-    }
-    val inspectionFindingsState = rememberSaveable {
-        mutableStateOf("")
-    }
-    val inspectionNotesState = rememberSaveable {
-        mutableStateOf("")
-    }
-    val inspectionResultState = rememberSaveable {
-        mutableStateOf("")
-    }
+    val caseRecordsState =
+        rememberSaveable {
+            mutableStateOf(
+                emptyList<List<String>>()
+            )
+        }
 
-    val selectedUpdateStatusState = rememberSaveable {
-        mutableStateOf("")
-    }
-    val completionNotesState = rememberSaveable {
-        mutableStateOf("")
-    }
+    val caseIdState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
+
+    val caseStatusState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
+
+    val priorityState =
+        rememberSaveable {
+            mutableStateOf("Medium")
+        }
+
+    val assignedStaffState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
+
+    val inspectionDateState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
+
+    val inspectionStaffMemberState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
+
+    val inspectionFindingsState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
+
+    val inspectionNotesState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
+
+    val inspectionResultState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
+
+    val selectedUpdateStatusState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
+
+    val completionNotesState =
+        rememberSaveable {
+            mutableStateOf("")
+        }
 
     return remember {
         CivisAppState(
@@ -598,32 +499,24 @@ fun rememberCivisAppState(): CivisAppState {
             reportLocationState = reportLocationState,
             reportPhotoAddedState = reportPhotoAddedState,
             nextCaseNumberState = nextCaseNumberState,
-            caseIdsState = caseIdsState,
-            caseCategoriesState = caseCategoriesState,
-            caseDescriptionsState = caseDescriptionsState,
-            caseLocationsState = caseLocationsState,
-            casePhotoAddedState = casePhotoAddedState,
-            caseDatesState = caseDatesState,
-            caseStatusesState = caseStatusesState,
-            casePrioritiesState = casePrioritiesState,
-            caseAssignedStaffState = caseAssignedStaffState,
-            caseInspectionDatesState = caseInspectionDatesState,
-            caseInspectionStaffMembersState = caseInspectionStaffMembersState,
-            caseInspectionFindingsState = caseInspectionFindingsState,
-            caseInspectionNotesState = caseInspectionNotesState,
-            caseInspectionResultsState = caseInspectionResultsState,
-            caseCompletionNotesState = caseCompletionNotesState,
+            caseRecordsState = caseRecordsState,
             caseIdState = caseIdState,
             caseStatusState = caseStatusState,
             priorityState = priorityState,
             assignedStaffState = assignedStaffState,
             inspectionDateState = inspectionDateState,
-            inspectionStaffMemberState = inspectionStaffMemberState,
-            inspectionFindingsState = inspectionFindingsState,
-            inspectionNotesState = inspectionNotesState,
-            inspectionResultState = inspectionResultState,
-            selectedUpdateStatusState = selectedUpdateStatusState,
-            completionNotesState = completionNotesState
+            inspectionStaffMemberState =
+                inspectionStaffMemberState,
+            inspectionFindingsState =
+                inspectionFindingsState,
+            inspectionNotesState =
+                inspectionNotesState,
+            inspectionResultState =
+                inspectionResultState,
+            selectedUpdateStatusState =
+                selectedUpdateStatusState,
+            completionNotesState =
+                completionNotesState
         )
     }
 }
