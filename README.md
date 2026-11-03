@@ -1,6 +1,16 @@
 # CIVIS - Community Infrastructure, Visibility, and Integrated Services
 
-CIVIS is an Android mobile application developed for **IT114 - Mobile Development Fundamentals**.
+CIVIS is an Android mobile application developed for IT114 - Mobile Development Fundamentals.
+
+## Project Information
+
+**Group:** Group 4  
+**Section:** A3101
+
+**Group Members:**
+- Juztin Kristoffer Estacio
+- Juan Carlos Manalastas
+- Samuel Peter Ocampo
 
 The application provides barangay residents with a centralized way to report and monitor non-emergency community and infrastructure issues. It also provides barangay staff with a structured workflow for reviewing, assigning, inspecting, updating, and resolving reported cases.
 
@@ -14,8 +24,8 @@ The project focuses on the mobile application concepts covered in IT114, includi
 
 CIVIS supports two user roles:
 
-- **Resident**
-- **Barangay Staff**
+- Resident
+- Barangay Staff
 
 The application begins with role selection so that the Resident and Staff workflows can be demonstrated without implementing an authentication system.
 
@@ -28,6 +38,7 @@ Residents can:
 - Enter an issue description
 - Enter a location
 - Add the report's photo state
+- Receive feedback about missing required report information
 - Review report information before submission
 - Confirm report submission
 - Receive a unique CIV case ID
@@ -45,15 +56,15 @@ Resident editing and deletion are restricted after staff processing begins so th
 
 The primary reporting flow is:
 
-**Resident Home → Report an Issue → Review Report → Submit Confirmation → Case Status**
+Resident Home → Report an Issue → Review Report → Submit Confirmation → Case Status
 
 Submitted reports can also be accessed through:
 
-**Resident Home → My Reports → Track Report**
+Resident Home → My Reports → Track Report
 
 or:
 
-**Resident Home → My Reports → View Report**
+Resident Home → My Reports → View Report
 
 Residents can manage eligible reports through the View Report screen before staff processing begins.
 
@@ -82,11 +93,11 @@ Barangay staff can:
 
 The primary Staff workflow is:
 
-**Staff Home → Case Details → Case Assignment → Record Inspection → Case Update → Resolution**
+Staff Home → Case Details → Case Assignment → Record Inspection → Case Update → Resolution
 
 Staff can also access all reports through:
 
-**Staff Home → Cases → Case Details**
+Staff Home → Cases → Case Details
 
 Case assignment and inspection actions provide confirmation states so that users receive clear feedback after completing important tasks.
 
@@ -96,14 +107,16 @@ CIVIS supports multiple independent cases during the application session.
 
 Each submitted report receives its own sequential case ID:
 
-- `CIV-0001`
-- `CIV-0002`
-- `CIV-0003`
+- CIV-0001
+- CIV-0002
+- CIV-0003
 - and so on
 
 Case IDs are not reused after a case is deleted during the active application state.
 
-Each case maintains its own report information, status, priority, assignment, inspection information, and completion notes.
+Each case maintains its own report information, submission date, status, priority, assignment, inspection information, and completion notes.
+
+New reports use the actual submission date rather than a fixed placeholder date.
 
 ## Case Statuses
 
@@ -141,7 +154,7 @@ Inspection results update the case's status.
 
 When additional work is required, staff can continue updating the case. When a case is resolved, completion notes can be recorded and made visible to the Resident through View Report.
 
-Resolved cases can also be reopened as **In Progress** if additional work becomes necessary.
+Resolved cases can also be reopened as In Progress if additional work becomes necessary.
 
 ## Application State
 
@@ -149,9 +162,9 @@ CIVIS uses state concepts covered in IT114 to connect the interface to the appli
 
 The implementation uses:
 
-- `remember`
-- `rememberSaveable`
-- `mutableStateOf`
+- remember
+- rememberSaveable
+- mutableStateOf
 - State hoisting
 - Conditional rendering
 - Event callbacks
@@ -159,22 +172,22 @@ The implementation uses:
 
 Application state is shared with the navigation layer so that individual screens can receive values and communicate user actions through callbacks.
 
-Supported application values are preserved across configuration changes such as device rotation through `rememberSaveable`.
+Supported application values are preserved across configuration changes such as device rotation through rememberSaveable.
 
 ## Navigation
 
 CIVIS uses Navigation Compose with:
 
-- One `NavController`
-- One `NavHost`
+- One NavController
+- One NavHost
 - Centralized route definitions
-- `navigate()`
-- `popBackStack()`
+- navigate()
+- popBackStack()
 - Explicit user-driven navigation
 
-Navigation routes are defined in `CivisRoutes` rather than repeated as route strings throughout the application.
+Navigation routes are defined in CivisRoutes rather than repeated as route strings throughout the application.
 
-Navigation actions are also checked against the current destination where needed to reduce duplicate navigation caused by repeated rapid taps.
+Navigation actions are also checked against the current destination where needed to reduce duplicate navigation caused by repeated rapid taps. Forward and reverse navigation actions are guarded to reduce unintended movement through multiple screens when controls are tapped rapidly.
 
 ## User Interface
 
@@ -182,21 +195,24 @@ The application is implemented using Kotlin and Jetpack Compose.
 
 The interface uses Compose components and concepts covered in the course, including:
 
-- `Column`
-- `Row`
-- `Box`
-- `Text`
-- `Button`
-- `OutlinedButton`
-- `OutlinedTextField`
-- `DropdownMenu`
-- `AlertDialog`
-- `Modifier`
+- Column
+- Row
+- Box
+- Text
+- Button
+- OutlinedButton
+- OutlinedTextField
+- DropdownMenu
+- AlertDialog
+- Modifier
 - Material 3 components
+- Material icons
 - Reusable composables
 - Conditional UI rendering
 
 Screens are designed around clear primary tasks, visible actions, readable information, and predictable forward and reverse navigation.
+
+Required report information is checked when the Resident presses Continue. If information is missing, the interface identifies the missing fields before allowing the reporting workflow to continue.
 
 ## Project Structure
 
@@ -230,8 +246,9 @@ The application has been manually tested for the primary Resident and Staff work
 Testing has included:
 
 - Report creation
-- Required report input
+- Required report input and missing-field feedback
 - Report review and submission
+- Actual report submission date
 - Multiple case creation
 - Unique sequential case IDs
 - Individual case selection
@@ -258,7 +275,7 @@ Testing has included:
 - State preservation during device rotation
 - Regression testing after refinements
 
-The project has also been checked for leftover debug logging, TODO/FIXME markers, and hardcoded navigation route strings.
+The project has also been checked for leftover debug logging, TODO/FIXME markers, hardcoded navigation route strings, and placeholder navigation icons.
 
 ## Terminal Assessment Refinements
 
@@ -282,7 +299,10 @@ Major refinements include:
 - Connecting inspection notes to the Resident report view
 - Adding case update and completion notes
 - Supporting resolved-case reopening
-- Adding protection against duplicate navigation from repeated taps
+- Adding protection against duplicate forward and reverse navigation from repeated taps
+- Replacing text-character navigation controls with Material icons
+- Using the actual submission date for newly submitted reports
+- Providing missing-field feedback when an incomplete report attempts to continue
 - Cleaning unused application-state members
 
 These refinements strengthen the connection between the application's interface, state, and complete case workflow while remaining within the concepts used in IT114.
@@ -312,9 +332,7 @@ The application can then be run using an Android emulator or compatible Android 
 
 A command-line debug build can be performed from the `android` directory with:
 
-```bash
-./gradlew clean assembleDebug
-```
+`./gradlew clean assembleDebug`
 
 ## Project Status
 
