@@ -14,13 +14,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,12 +84,12 @@ fun CaseDetailsScreen(
                 .height(48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(
+            IconButton(
                 onClick = onBack
             ) {
-                Text(
-                    text = "‹",
-                    style = MaterialTheme.typography.headlineSmall
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
                 )
             }
 
@@ -348,12 +352,16 @@ private fun PrioritySelector(
                 Text("Select Priority")
             },
             trailingIcon = {
-                Text(
-                    text = "▼",
-                    modifier = Modifier.clickable {
+                IconButton(
+                    onClick = {
                         menuExpanded = true
                     }
-                )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = "Open priority menu"
+                    )
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -412,12 +420,16 @@ private fun StaffSelector(
                 Text("Select Staff Member")
             },
             trailingIcon = {
-                Text(
-                    text = "▼",
-                    modifier = Modifier.clickable {
+                IconButton(
+                    onClick = {
                         menuExpanded = true
                     }
-                )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = "Open staff member menu"
+                    )
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
