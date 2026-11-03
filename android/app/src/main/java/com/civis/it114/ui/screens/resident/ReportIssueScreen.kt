@@ -64,6 +64,11 @@ fun ReportIssueScreen(
         mutableStateOf(false)
     }
 
+    val categoryError = showMissingFields && selectedCategory.isBlank()
+    val descriptionError = showMissingFields && description.isBlank()
+    val locationError = showMissingFields && location.isBlank()
+    val photoError = showMissingFields && !photoAdded
+
     val missingFields = listOfNotNull(
         if (selectedCategory.isBlank()) "Issue Category" else null,
         if (description.isBlank()) "Description" else null,
@@ -123,6 +128,7 @@ fun ReportIssueScreen(
                 value = selectedCategory,
                 onValueChange = {},
                 readOnly = true,
+                isError = categoryError,
                 placeholder = {
                     Text("Select Category")
                 },
@@ -166,6 +172,16 @@ fun ReportIssueScreen(
             }
         }
 
+        if (categoryError) {
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Please select an issue category.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
         Spacer(modifier = Modifier.height(18.dp))
 
         Text(
@@ -183,6 +199,7 @@ fun ReportIssueScreen(
                     onDescriptionChange(it)
                 }
             },
+            isError = descriptionError,
             placeholder = {
                 Text("Describe the issue")
             },
@@ -193,6 +210,16 @@ fun ReportIssueScreen(
                 .fillMaxWidth()
                 .height(140.dp)
         )
+
+        if (descriptionError) {
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Please enter a description.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         Spacer(modifier = Modifier.height(18.dp))
 
@@ -207,12 +234,23 @@ fun ReportIssueScreen(
         OutlinedTextField(
             value = location,
             onValueChange = onLocationChange,
+            isError = locationError,
             placeholder = {
                 Text("Enter location")
             },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
+
+        if (locationError) {
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Please enter the issue location.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         Spacer(modifier = Modifier.height(18.dp))
 
@@ -239,17 +277,17 @@ fun ReportIssueScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        if (photoError) {
+            Spacer(modifier = Modifier.height(6.dp))
 
-        if (showMissingFields && missingFields.isNotEmpty()) {
             Text(
-                text = "Missing: ${missingFields.joinToString(", ")}",
+                text = "Please add a photo before continuing.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
