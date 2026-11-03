@@ -59,6 +59,16 @@ fun CaseUpdateScreen(
         mutableStateOf(false)
     }
 
+    var showErrors by remember {
+        mutableStateOf(false)
+    }
+
+    val statusError = showErrors && selectedStatus.isBlank()
+    val notesError = showErrors && completionNotes.isBlank()
+
+    val canSave = selectedStatus.isNotBlank() &&
+        completionNotes.isNotBlank()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -160,6 +170,7 @@ fun CaseUpdateScreen(
                 value = selectedStatus,
                 onValueChange = {},
                 readOnly = true,
+                isError = statusError,
                 placeholder = {
                     Text("Select Status")
                 },
@@ -203,11 +214,22 @@ fun CaseUpdateScreen(
             }
         }
 
+        if (statusError) {
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Please select an update status.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
         Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
             value = completionNotes,
             onValueChange = onCompletionNotesChange,
+            isError = notesError,
             label = {
                 Text("Completion Notes")
             },
@@ -218,11 +240,26 @@ fun CaseUpdateScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        if (notesError) {
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Please enter case update or completion notes.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
         Spacer(modifier = Modifier.height(28.dp))
 
         Button(
-            onClick = onSaveUpdate,
-            enabled = selectedStatus.isNotBlank(),
+            onClick = {
+                showErrors = true
+
+                if (canSave) {
+                    onSaveUpdate()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)

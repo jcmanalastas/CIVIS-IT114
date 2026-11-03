@@ -717,6 +717,7 @@ fun CivisNavigation(
 
             RecordInspectionScreen(
                 caseId = currentCase?.id ?: "",
+                submissionDate = appState.currentCase?.date.orEmpty(),
                 inspectionDate = appState.inspectionDate,
                 staffMember = appState.inspectionStaffMember,
                 findings = appState.inspectionFindings,

@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -41,6 +42,7 @@ import java.util.Locale
 @Composable
 fun RecordInspectionScreen(
     caseId: String,
+    submissionDate: String,
     inspectionDate: String,
     onInspectionDateChange: (String) -> Unit,
     staffMember: String,
@@ -66,9 +68,72 @@ fun RecordInspectionScreen(
         mutableStateOf(false)
     }
 
+    var showErrors by remember {
+        mutableStateOf(false)
+    }
+
     var selectedDate by remember {
         mutableStateOf(Calendar.getInstance())
     }
+
+    val dateFormat = remember {
+        SimpleDateFormat(
+            "MMMM d, yyyy",
+            Locale.ENGLISH
+        ).apply {
+            isLenient = false
+        }
+    }
+
+    val submissionDateValue = remember(submissionDate) {
+        try {
+            dateFormat.parse(submissionDate)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    val inspectionDateValue = remember(inspectionDate) {
+        try {
+            dateFormat.parse(inspectionDate)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    val dateError = when {
+        inspectionDate.isBlank() -> {
+            if (showErrors) {
+                "Inspection date is required."
+            } else {
+                null
+            }
+        }
+
+        submissionDateValue == null ->
+            "The case submission date is unavailable or invalid."
+
+        inspectionDateValue == null ->
+            "Please select a valid inspection date."
+
+        inspectionDateValue.before(submissionDateValue) ->
+            "Inspection date cannot be earlier than the submission date."
+
+        else -> null
+    }
+
+    val staffError = showErrors && staffMember.isBlank()
+    val findingsError = showErrors && findings.isBlank()
+    val resultError = showErrors && result.isBlank()
+
+    val canSave =
+        caseId.isNotBlank() &&
+        submissionDateValue != null &&
+        inspectionDateValue != null &&
+        dateError == null &&
+        staffMember.isNotBlank() &&
+        findings.isNotBlank() &&
+        result.isNotBlank()
 
     val staffMembers = listOf(
         "Staff Member 1",
@@ -81,6 +146,16 @@ fun RecordInspectionScreen(
         "Resolved"
     )
 
+    fun openDateDialog() {
+        selectedDate = Calendar.getInstance()
+
+        if (inspectionDateValue != null) {
+            selectedDate.time = inspectionDateValue
+        }
+
+        showDateDialog = true
+    }
+
     if (showDateDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -92,10 +167,7 @@ fun RecordInspectionScreen(
             text = {
                 Column {
                     Text(
-                        text = SimpleDateFormat(
-                            "MMMM d, yyyy",
-                            Locale.getDefault()
-                        ).format(selectedDate.time),
+                        text = dateFormat.format(selectedDate.time),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -168,13 +240,9 @@ fun RecordInspectionScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        val formattedDate =
-                            SimpleDateFormat(
-                                "MMMM d, yyyy",
-                                Locale.getDefault()
-                            ).format(selectedDate.time)
-
-                        onInspectionDateChange(formattedDate)
+                        onInspectionDateChange(
+                            dateFormat.format(selectedDate.time)
+                        )
                         showDateDialog = false
                     }
                 ) {
@@ -240,19 +308,27 @@ fun RecordInspectionScreen(
             style = MaterialTheme.typography.bodyLarge
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Submitted: $submissionDate",
+            style = MaterialTheme.typography.bodySmall
+        )
+
         Spacer(modifier = Modifier.height(20.dp))
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    showDateDialog = true
+                    openDateDialog()
                 }
         ) {
             OutlinedTextField(
                 value = inspectionDate,
                 onValueChange = {},
                 readOnly = true,
+                isError = dateError != null,
                 label = {
                     Text("Inspection Date")
                 },
@@ -262,13 +338,26 @@ fun RecordInspectionScreen(
                 trailingIcon = {
                     IconButton(
                         onClick = {
-                            showDateDialog = true
+                            openDateDialog()
                         }
                     ) {
-                        Text("📅")
+                        Icon(
+                            imageVector = Icons.Filled.DateRange,
+                            contentDescription = "Select inspection date"
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        if (dateError != null) {
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = dateError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
             )
         }
 
@@ -281,6 +370,7 @@ fun RecordInspectionScreen(
                 value = staffMember,
                 onValueChange = {},
                 readOnly = true,
+                isError = staffError,
                 label = {
                     Text("Staff Member")
                 },
@@ -327,11 +417,22 @@ fun RecordInspectionScreen(
             }
         }
 
+        if (staffError) {
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Please select a staff member.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = findings,
             onValueChange = onFindingsChange,
+            isError = findingsError,
             label = {
                 Text("Inspection Findings")
             },
@@ -341,6 +442,16 @@ fun RecordInspectionScreen(
             minLines = 4,
             modifier = Modifier.fillMaxWidth()
         )
+
+        if (findingsError) {
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Inspection findings are required.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -366,6 +477,7 @@ fun RecordInspectionScreen(
                 value = result,
                 onValueChange = {},
                 readOnly = true,
+                isError = resultError,
                 label = {
                     Text("Inspection Result")
                 },
@@ -412,14 +524,26 @@ fun RecordInspectionScreen(
             }
         }
 
+        if (resultError) {
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "Please select an inspection result.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         Spacer(modifier = Modifier.height(28.dp))
 
         Button(
-            onClick = onSaveInspection,
-            enabled = inspectionDate.isNotBlank() &&
-                staffMember.isNotBlank() &&
-                findings.isNotBlank() &&
-                result.isNotBlank(),
+            onClick = {
+                showErrors = true
+
+                if (canSave) {
+                    onSaveInspection()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
@@ -440,6 +564,7 @@ private fun RecordInspectionScreenPreview() {
     MaterialTheme {
         RecordInspectionScreen(
             caseId = "CIV-0001",
+            submissionDate = "November 3, 2026",
             inspectionDate = "November 3, 2026",
             onInspectionDateChange = {},
             staffMember = "Staff Member 1",
