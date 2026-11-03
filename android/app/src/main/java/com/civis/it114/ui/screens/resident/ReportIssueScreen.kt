@@ -9,17 +9,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +60,17 @@ fun ReportIssueScreen(
         mutableStateOf(false)
     }
 
+    var showMissingFields by remember {
+        mutableStateOf(false)
+    }
+
+    val missingFields = listOfNotNull(
+        if (selectedCategory.isBlank()) "Issue Category" else null,
+        if (description.isBlank()) "Description" else null,
+        if (location.isBlank()) "Location" else null,
+        if (!photoAdded) "Photo" else null
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,12 +83,12 @@ fun ReportIssueScreen(
                 .height(48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(
+            IconButton(
                 onClick = onCancel
             ) {
-                Text(
-                    text = "‹",
-                    style = MaterialTheme.typography.headlineSmall
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
                 )
             }
 
@@ -112,12 +127,16 @@ fun ReportIssueScreen(
                     Text("Select Category")
                 },
                 trailingIcon = {
-                    Text(
-                        text = "▼",
-                        modifier = Modifier.clickable {
+                    IconButton(
+                        onClick = {
                             categoryMenuExpanded = true
                         }
-                    )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = "Open category menu"
+                        )
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -222,12 +241,25 @@ fun ReportIssueScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        if (showMissingFields && missingFields.isNotEmpty()) {
+            Text(
+                text = "Missing: ${missingFields.joinToString(", ")}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
         Button(
-            onClick = onContinue,
-            enabled = selectedCategory.isNotBlank() &&
-                    description.isNotBlank() &&
-                    location.isNotBlank() &&
-                    photoAdded,
+            onClick = {
+                if (missingFields.isEmpty()) {
+                    showMissingFields = false
+                    onContinue()
+                } else {
+                    showMissingFields = true
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)

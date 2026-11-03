@@ -7,6 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 data class CivisCase(
     val id: String,
@@ -144,6 +147,12 @@ class CivisAppState(
         val newCaseId =
             "CIV-${nextCaseNumber.toString().padStart(4, '0')}"
 
+        val currentDate =
+            SimpleDateFormat(
+                "MMMM d, yyyy",
+                Locale.getDefault()
+            ).format(Date())
+
         nextCaseNumber += 1
 
         caseIds = caseIds + newCaseId
@@ -151,7 +160,7 @@ class CivisAppState(
         caseDescriptions = caseDescriptions + reportDescription
         caseLocations = caseLocations + reportLocation
         casePhotoAdded = casePhotoAdded + reportPhotoAdded
-        caseDates = caseDates + "Sept. 10, 2026"
+        caseDates = caseDates + currentDate
         caseStatuses = caseStatuses + "Submitted"
         casePriorities = casePriorities + "Medium"
         caseAssignedStaff = caseAssignedStaff + ""

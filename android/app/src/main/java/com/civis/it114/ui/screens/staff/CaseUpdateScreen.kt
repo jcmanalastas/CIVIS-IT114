@@ -14,13 +14,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 private val caseStatuses = listOf(
-    "Assigned",
     "For Inspection",
     "Needs Repair",
     "In Progress",
@@ -52,20 +55,8 @@ fun CaseUpdateScreen(
     onBack: () -> Unit,
     onSaveUpdate: () -> Unit
 ) {
-    var statusMenuExpanded by remember {
+    var menuExpanded by remember {
         mutableStateOf(false)
-    }
-
-    val notesLabel = if (selectedStatus == "Resolved") {
-        "Completion Notes"
-    } else {
-        "Update Notes"
-    }
-
-    val notesPlaceholder = if (selectedStatus == "Resolved") {
-        "Enter completion notes"
-    } else {
-        "Enter update notes"
     }
 
     Column(
@@ -80,12 +71,12 @@ fun CaseUpdateScreen(
                 .height(48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(
+            IconButton(
                 onClick = onBack
             ) {
-                Text(
-                    text = "‹",
-                    style = MaterialTheme.typography.headlineSmall
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
                 )
             }
 
@@ -94,7 +85,7 @@ fun CaseUpdateScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Update Case",
+                    text = "Case Update",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -147,14 +138,15 @@ fun CaseUpdateScreen(
 
             Text(
                 text = currentStatus,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Status",
+            text = "Update Status",
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold
         )
@@ -172,24 +164,28 @@ fun CaseUpdateScreen(
                     Text("Select Status")
                 },
                 trailingIcon = {
-                    Text(
-                        text = "▼",
-                        modifier = Modifier.clickable {
-                            statusMenuExpanded = true
+                    IconButton(
+                        onClick = {
+                            menuExpanded = true
                         }
-                    )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = "Open status menu"
+                        )
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        statusMenuExpanded = true
+                        menuExpanded = true
                     }
             )
 
             DropdownMenu(
-                expanded = statusMenuExpanded,
+                expanded = menuExpanded,
                 onDismissRequest = {
-                    statusMenuExpanded = false
+                    menuExpanded = false
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -200,7 +196,7 @@ fun CaseUpdateScreen(
                         },
                         onClick = {
                             onStatusChange(status)
-                            statusMenuExpanded = false
+                            menuExpanded = false
                         }
                     )
                 }
@@ -209,31 +205,24 @@ fun CaseUpdateScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(
-            text = notesLabel,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
         OutlinedTextField(
             value = completionNotes,
             onValueChange = onCompletionNotesChange,
-            placeholder = {
-                Text(notesPlaceholder)
+            label = {
+                Text("Completion Notes")
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(140.dp)
+            placeholder = {
+                Text("Enter case update or completion notes")
+            },
+            minLines = 4,
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         Button(
             onClick = onSaveUpdate,
-            enabled = selectedStatus.isNotBlank() &&
-                completionNotes.isNotBlank(),
+            enabled = selectedStatus.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
@@ -255,9 +244,9 @@ private fun CaseUpdateScreenPreview() {
         CaseUpdateScreen(
             caseId = "CIV-0001",
             category = "Broken Streetlight",
-            currentStatus = "In Progress",
-            selectedStatus = "Resolved",
-            completionNotes = "Streetlight repaired and tested.",
+            currentStatus = "Needs Repair",
+            selectedStatus = "In Progress",
+            completionNotes = "Replacement work has started.",
             onStatusChange = {},
             onCompletionNotesChange = {},
             onBack = {},

@@ -14,7 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -159,13 +164,13 @@ private fun ResidentHeader(
             .fillMaxWidth()
             .height(48.dp)
     ) {
-        TextButton(
+        IconButton(
             onClick = onBack,
             modifier = Modifier.align(Alignment.CenterStart)
         ) {
-            Text(
-                text = "‹",
-                style = MaterialTheme.typography.headlineSmall
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Back"
             )
         }
 
@@ -305,7 +310,10 @@ private fun ResidentBottomBar(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("⌂")
+                Icon(
+                    imageVector = Icons.Filled.Home,
+                    contentDescription = "Home"
+                )
                 Text("Home")
             }
         }

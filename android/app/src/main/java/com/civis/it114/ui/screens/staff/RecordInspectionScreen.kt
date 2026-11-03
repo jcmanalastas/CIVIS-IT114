@@ -9,16 +9,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,32 +33,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-private val staffMembers = listOf(
-    "Staff Member 1",
-    "Staff Member 2"
-)
-
-private val inspectionResults = listOf(
-    "For Inspection",
-    "Needs Repair",
-    "Resolved"
-)
-
 @Composable
 fun RecordInspectionScreen(
     caseId: String,
     inspectionDate: String,
-    staffMember: String,
-    findings: String,
-    notes: String,
-    result: String,
     onInspectionDateChange: (String) -> Unit,
+    staffMember: String,
     onStaffMemberChange: (String) -> Unit,
+    findings: String,
     onFindingsChange: (String) -> Unit,
+    notes: String,
     onNotesChange: (String) -> Unit,
+    result: String,
     onResultChange: (String) -> Unit,
-    onBack: () -> Unit,
-    onSaveInspection: () -> Unit
+    onSaveInspection: () -> Unit,
+    onBack: () -> Unit
 ) {
     var staffMenuExpanded by remember {
         mutableStateOf(false)
@@ -65,62 +57,73 @@ fun RecordInspectionScreen(
         mutableStateOf(false)
     }
 
+    val staffMembers = listOf(
+        "Staff Member 1",
+        "Staff Member 2",
+        "Staff Member 3"
+    )
+
+    val results = listOf(
+        "Needs Repair",
+        "In Progress",
+        "Resolved"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(20.dp)
+            .padding(
+                horizontal = 24.dp,
+                vertical = 16.dp
+            )
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .height(48.dp)
         ) {
-            TextButton(
-                onClick = onBack
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier.align(Alignment.CenterStart)
             ) {
-                Text(
-                    text = "‹",
-                    style = MaterialTheme.typography.headlineSmall
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back"
                 )
             }
 
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Record Inspection",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.size(48.dp))
+            Text(
+                text = "Record Inspection",
+                modifier = Modifier.align(Alignment.Center),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         Text(
-            text = caseId,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        Text(
-            text = "Inspection Date",
-            style = MaterialTheme.typography.titleSmall,
+            text = "Case ID",
+            style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
+        Text(
+            text = caseId,
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
         OutlinedTextField(
             value = inspectionDate,
             onValueChange = onInspectionDateChange,
+            label = {
+                Text("Inspection Date")
+            },
             placeholder = {
                 Text("Enter inspection date")
             },
@@ -130,14 +133,6 @@ fun RecordInspectionScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Staff Member",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -145,16 +140,23 @@ fun RecordInspectionScreen(
                 value = staffMember,
                 onValueChange = {},
                 readOnly = true,
+                label = {
+                    Text("Staff Member")
+                },
                 placeholder = {
-                    Text("Select Staff Member")
+                    Text("Select staff member")
                 },
                 trailingIcon = {
-                    Text(
-                        text = "▼",
-                        modifier = Modifier.clickable {
+                    IconButton(
+                        onClick = {
                             staffMenuExpanded = true
                         }
-                    )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = "Open staff member menu"
+                        )
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -167,16 +169,15 @@ fun RecordInspectionScreen(
                 expanded = staffMenuExpanded,
                 onDismissRequest = {
                     staffMenuExpanded = false
-                },
-                modifier = Modifier.fillMaxWidth()
+                }
             ) {
-                staffMembers.forEach { staff ->
+                staffMembers.forEach { member ->
                     DropdownMenuItem(
                         text = {
-                            Text(staff)
+                            Text(member)
                         },
                         onClick = {
-                            onStaffMemberChange(staff)
+                            onStaffMemberChange(member)
                             staffMenuExpanded = false
                         }
                     )
@@ -186,55 +187,35 @@ fun RecordInspectionScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Findings",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
         OutlinedTextField(
             value = findings,
             onValueChange = onFindingsChange,
+            label = {
+                Text("Inspection Findings")
+            },
             placeholder = {
                 Text("Enter inspection findings")
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
+            minLines = 4,
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Notes",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
 
         OutlinedTextField(
             value = notes,
             onValueChange = onNotesChange,
+            label = {
+                Text("Inspection Notes")
+            },
             placeholder = {
                 Text("Enter additional notes")
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(90.dp)
+            minLines = 3,
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Result",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
 
         Box(
             modifier = Modifier.fillMaxWidth()
@@ -243,16 +224,23 @@ fun RecordInspectionScreen(
                 value = result,
                 onValueChange = {},
                 readOnly = true,
+                label = {
+                    Text("Inspection Result")
+                },
                 placeholder = {
-                    Text("Select Result")
+                    Text("Select result")
                 },
                 trailingIcon = {
-                    Text(
-                        text = "▼",
-                        modifier = Modifier.clickable {
+                    IconButton(
+                        onClick = {
                             resultMenuExpanded = true
                         }
-                    )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = "Open result menu"
+                        )
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -265,10 +253,9 @@ fun RecordInspectionScreen(
                 expanded = resultMenuExpanded,
                 onDismissRequest = {
                     resultMenuExpanded = false
-                },
-                modifier = Modifier.fillMaxWidth()
+                }
             ) {
-                inspectionResults.forEach { inspectionResult ->
+                results.forEach { inspectionResult ->
                     DropdownMenuItem(
                         text = {
                             Text(inspectionResult)
@@ -282,19 +269,19 @@ fun RecordInspectionScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         Button(
             onClick = onSaveInspection,
             enabled = inspectionDate.isNotBlank() &&
-                    staffMember.isNotBlank() &&
-                    findings.isNotBlank() &&
-                    result.isNotBlank(),
+                staffMember.isNotBlank() &&
+                findings.isNotBlank() &&
+                result.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text("Save Inspection Record")
+            Text("Save Inspection")
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -311,17 +298,17 @@ private fun RecordInspectionScreenPreview() {
         RecordInspectionScreen(
             caseId = "CIV-0001",
             inspectionDate = "Sept. 14, 2026",
-            staffMember = "Staff Member 1",
-            findings = "Streetlight requires repair.",
-            notes = "Replacement parts are needed.",
-            result = "For Inspection",
             onInspectionDateChange = {},
+            staffMember = "Staff Member 1",
             onStaffMemberChange = {},
+            findings = "Streetlight requires replacement.",
             onFindingsChange = {},
+            notes = "Replacement part is required.",
             onNotesChange = {},
+            result = "Needs Repair",
             onResultChange = {},
-            onBack = {},
-            onSaveInspection = {}
+            onSaveInspection = {},
+            onBack = {}
         )
     }
 }

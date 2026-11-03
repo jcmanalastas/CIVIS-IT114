@@ -50,6 +50,15 @@ private fun navigateFrom(
     }
 }
 
+private fun popBackFrom(
+    navController: NavHostController,
+    sourceRoute: String
+) {
+    if (navController.currentDestination?.route == sourceRoute) {
+        navController.popBackStack()
+    }
+}
+
 @Composable
 fun CivisNavigation(
     appState: CivisAppState
@@ -118,7 +127,10 @@ fun CivisNavigation(
                     }
                 },
                 onBack = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.ResidentHome
+                    )
                 }
             )
         }
@@ -155,13 +167,21 @@ fun CivisNavigation(
                     }
                 },
                 onBack = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.ResidentReports
+                    )
                 },
                 onHome = {
-                    navController.popBackStack(
-                        CivisRoutes.ResidentHome,
-                        false
-                    )
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ResidentReports
+                    ) {
+                        navController.popBackStack(
+                            CivisRoutes.ResidentHome,
+                            false
+                        )
+                    }
                 }
             )
         }
@@ -192,8 +212,17 @@ fun CivisNavigation(
                     )
                 },
                 onCancel = {
-                    appState.clearReportDraft()
-                    navController.popBackStack()
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ReportIssue
+                    ) {
+                        appState.clearReportDraft()
+
+                        popBackFrom(
+                            navController,
+                            CivisRoutes.ReportIssue
+                        )
+                    }
                 }
             )
         }
@@ -210,13 +239,21 @@ fun CivisNavigation(
                 completionNotes = "",
                 canModify = false,
                 onBack = {
-                    navController.popBackStack(
-                        CivisRoutes.ReportIssue,
-                        false
-                    )
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ReviewReport
+                    ) {
+                        navController.popBackStack(
+                            CivisRoutes.ReportIssue,
+                            false
+                        )
+                    }
                 },
                 onEdit = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.ReviewReport
+                    )
                 },
                 onDelete = {},
                 onSubmitReport = {
@@ -244,7 +281,10 @@ fun CivisNavigation(
                 completionNotes = currentCase?.completionNotes ?: "",
                 canModify = appState.canResidentModifyCurrentCase,
                 onBack = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.ViewReport
+                    )
                 },
                 onEdit = {
                     if (
@@ -277,10 +317,15 @@ fun CivisNavigation(
                 },
                 onSubmitReport = {},
                 onBackToHome = {
-                    navController.popBackStack(
-                        CivisRoutes.ResidentHome,
-                        false
-                    )
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ViewReport
+                    ) {
+                        navController.popBackStack(
+                            CivisRoutes.ResidentHome,
+                            false
+                        )
+                    }
                 }
             )
         }
@@ -311,8 +356,17 @@ fun CivisNavigation(
                     )
                 },
                 onCancel = {
-                    appState.clearReportDraft()
-                    navController.popBackStack()
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.EditReport
+                    ) {
+                        appState.clearReportDraft()
+
+                        popBackFrom(
+                            navController,
+                            CivisRoutes.EditReport
+                        )
+                    }
                 }
             )
         }
@@ -329,13 +383,21 @@ fun CivisNavigation(
                 completionNotes = "",
                 canModify = false,
                 onBack = {
-                    navController.popBackStack(
-                        CivisRoutes.EditReport,
-                        false
-                    )
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.ReviewEditReport
+                    ) {
+                        navController.popBackStack(
+                            CivisRoutes.EditReport,
+                            false
+                        )
+                    }
                 },
                 onEdit = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.ReviewEditReport
+                    )
                 },
                 onDelete = {},
                 onSubmitReport = {
@@ -359,7 +421,10 @@ fun CivisNavigation(
         composable(CivisRoutes.SubmitConfirmation) {
             SubmitConfirmationScreen(
                 onCancel = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.SubmitConfirmation
+                    )
                 },
                 onSubmit = {
                     if (
@@ -399,10 +464,15 @@ fun CivisNavigation(
                     }
                 },
                 onBackToHome = {
-                    navController.popBackStack(
-                        CivisRoutes.ResidentHome,
-                        false
-                    )
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.CaseStatus
+                    ) {
+                        navController.popBackStack(
+                            CivisRoutes.ResidentHome,
+                            false
+                        )
+                    }
                 }
             )
         }
@@ -462,7 +532,10 @@ fun CivisNavigation(
                     )
                 },
                 onBack = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.StaffHome
+                    )
                 }
             )
         }
@@ -485,13 +558,21 @@ fun CivisNavigation(
                     }
                 },
                 onBack = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.StaffCases
+                    )
                 },
                 onHome = {
-                    navController.popBackStack(
-                        CivisRoutes.StaffHome,
-                        false
-                    )
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.StaffCases
+                    ) {
+                        navController.popBackStack(
+                            CivisRoutes.StaffHome,
+                            false
+                        )
+                    }
                 }
             )
         }
@@ -516,7 +597,10 @@ fun CivisNavigation(
                     appState.assignedStaff = it
                 },
                 onBack = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.CaseDetails
+                    )
                 },
                 onAssignCase = {
                     if (
@@ -593,10 +677,15 @@ fun CivisNavigation(
                 caseId = currentCase?.id ?: "",
                 status = currentCase?.status ?: "",
                 onBackToHome = {
-                    navController.popBackStack(
-                        CivisRoutes.StaffHome,
-                        false
-                    )
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.AssignmentConfirmation
+                    ) {
+                        navController.popBackStack(
+                            CivisRoutes.StaffHome,
+                            false
+                        )
+                    }
                 }
             )
         }
@@ -610,10 +699,15 @@ fun CivisNavigation(
                 caseId = currentCase?.id ?: "",
                 status = currentCase?.status ?: "",
                 onBackToHome = {
-                    navController.popBackStack(
-                        CivisRoutes.StaffHome,
-                        false
-                    )
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.AssignmentUpdateConfirmation
+                    ) {
+                        navController.popBackStack(
+                            CivisRoutes.StaffHome,
+                            false
+                        )
+                    }
                 }
             )
         }
@@ -644,7 +738,10 @@ fun CivisNavigation(
                     appState.inspectionResult = it
                 },
                 onBack = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.RecordInspection
+                    )
                 },
                 onSaveInspection = {
                     if (
@@ -677,10 +774,15 @@ fun CivisNavigation(
                 caseId = currentCase?.id ?: "",
                 status = currentCase?.status ?: "",
                 onBackToHome = {
-                    navController.popBackStack(
-                        CivisRoutes.StaffHome,
-                        false
-                    )
+                    if (
+                        navController.currentDestination?.route ==
+                        CivisRoutes.InspectionConfirmation
+                    ) {
+                        navController.popBackStack(
+                            CivisRoutes.StaffHome,
+                            false
+                        )
+                    }
                 }
             )
         }
@@ -701,7 +803,10 @@ fun CivisNavigation(
                     appState.completionNotes = it
                 },
                 onBack = {
-                    navController.popBackStack()
+                    popBackFrom(
+                        navController,
+                        CivisRoutes.CaseUpdate
+                    )
                 },
                 onSaveUpdate = {
                     if (
